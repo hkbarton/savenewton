@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Save Newton Lite</string>
+    <string name="ad_keywords">game,mobile,action,application,video,apple</string>
+    <string name="adUnitID">a14cb5bcb0ef2ba</string>
+    <string name="anonymousUserID">Anonymous</string>
+    <string name="diagPostLocalScore_TitleTp" formatted="false">%d - Place: %d</string>
+    <string name="diagInfo_Title">Instruction</string>
+    <string name="diagTip_Title">Oops...</string>
+    <string name="diag_btnOK">OK</string>
+    <string name="diag_btnSave">Save</string>
+    <string name="diag_btnCancel">Cancel</string>
+    <string name="diagProgressPostScore_Msg">Posting Score...</string>
+    <string name="diagProgressPostArchievement_Msg">Posting Archievement...</string>
+    <string name="tipNoScore">No Record</string>
+    <string name="tipPostOnlineFail">Post online failed, maybe network timeout, please retry later.</string>
+    <string name="infoGameNote1">Save Newton is a funny and exciting shooting game!\n\nUse your bow and shot the falling apple, to save newton from apple\'s attack! Keep on touch left side of screen to hold bow, and release arrow when lift your finger, you can slide bow up and down when you hold it. Touch other part of screen should lead to game pause.\n\nContinued to hit apple or continued to miss should both lead to some special apple appear. When hit the different special apple with different type, your bow should receive different power:</string>
+    <string name="infoAppleNote1">Normal apple, shoot it to earn score.</string>
+    <string name="infoAppleNote2">Golden apple, it include higher score, and can make your bow more powerful to release three arrow each time.</string>
+    <string name="infoAppleNote3">Green apple, it include highest score, but make your bow weakness. However, you can get additional score from each apple when use weakness bow.</string>
+    <string name="infoAppleNote4">Special apple, it\'s score equal with normal apple, but it can make the special gravity to let every apple fall slowly in few seconds.</string>
+    <string name="infoGameNote2">Use these powers to earn highest score! Post score online to compete with other players all over the world!\n\nBe careful! DO NOT hit Newton!</string>
+    <string name="tipUnlockAchievement"  formatted="false">You have unlock achievement %s. You can post it online later.</string>
+    <string name="tipUnlockSomeAOnlineFail">Some of achievement unlock failed online, you can retry later.</string>
+    <string name="tipUnlockAllAOnlineFail">All of achievement unlock failed online, you can retry later.</string>
+</resources>

@@ -1,0 +1,8 @@
+Android/SaveNewton_AudioSource
+Android/SaveNewton_ImageSource
+Android/SaveNewton_Release
+Android/google-play-service_lib
+Android/ml.game.android.SaveNewton/bin
+Android/ml.game.android.SaveNewton/gen
+
+*.DS_Store
