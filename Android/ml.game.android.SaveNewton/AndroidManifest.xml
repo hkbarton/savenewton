@@ -17,6 +17,7 @@
         <!-- Google Play Service -->
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
         
+        <!-- Game Activity -->
         <activity android:name=".actMain" android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,15 +30,6 @@
         <!-- AD Activity -->
         <activity android:name="com.google.android.gms.ads.AdActivity"
              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
-        
-        <!-- Track Market installs from AdMob ads -->       
-        <receiver android:name="com.admob.android.ads.analytics.InstallReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
-        
-        <meta-data android:value="a14cb5bcb0ef2ba" android:name="ADMOB_PUBLISHER_ID" />
         
     </application>
     
