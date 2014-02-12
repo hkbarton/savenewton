@@ -1,8 +1,8 @@
-package ml.game.android.SaveNewton.lite;
+package ml.game.android.SaveNewton;
 
 import com.google.android.gms.ads.AdView;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,8 +19,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-public class actMain extends Activity {
+public class actMain extends BaseGameActivity {
     private static final int MenuType_Main = 0;
     private static final int MenuType_Options = 1;
     private static final int LoadEvent_FinishLoadResource = 0;
@@ -420,7 +421,7 @@ public class actMain extends Activity {
     private OnClickListener menuOnline_Click = new OnClickListener(){
         @Override
         public void onClick(View v) {
-            // TODO need update to Google Play Service GameClient
+        	actMain.this.beginUserInitiatedSignIn();
         }
     };
     
@@ -452,4 +453,14 @@ public class actMain extends Activity {
             toMainMenu();
         }
     };
+
+	@Override
+	public void onSignInFailed() {
+		// do nothing here, use default action that BaseGameUtils provide
+	}
+
+	@Override
+	public void onSignInSucceeded() {
+		
+	}
 }

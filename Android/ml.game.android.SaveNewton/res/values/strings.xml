@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Save Newton Lite</string>
-    <string name="ad_keywords">game,mobile,action,application,video,apple</string>
+    <string name="app_id">874679711322</string>
     <string name="adUnitID">a14cb5bcb0ef2ba</string>
+    <string name="app_name">Save Newton</string>
+    <string name="ad_keywords">game,mobile,action,application,video,apple</string>   
     <string name="anonymousUserID">Anonymous</string>
     <string name="diagPostLocalScore_TitleTp" formatted="false">%d - Place: %d</string>
     <string name="diagInfo_Title">Instruction</string>
@@ -13,6 +14,9 @@
     <string name="diagProgressPostScore_Msg">Posting Score...</string>
     <string name="diagProgressPostArchievement_Msg">Posting Archievement...</string>
     <string name="tipNoScore">No Record</string>
+    
+    <string name="tipLoginGoogleFailed">Failed log in your Google account, check your network or Google account setting.</string>
+    
     <string name="tipPostOnlineFail">Post online failed, maybe network timeout, please retry later.</string>
     <string name="infoGameNote1">Save Newton is a funny and exciting shooting game!\n\nUse your bow and shot the falling apple, to save newton from apple\'s attack! Keep on touch left side of screen to hold bow, and release arrow when lift your finger, you can slide bow up and down when you hold it. Touch other part of screen should lead to game pause.\n\nContinued to hit apple or continued to miss should both lead to some special apple appear. When hit the different special apple with different type, your bow should receive different power:</string>
     <string name="infoAppleNote1">Normal apple, shoot it to earn score.</string>

@@ -1,10 +1,10 @@
-package ml.game.android.SaveNewton.lite;
+package ml.game.android.SaveNewton;
 
-import ml.game.android.SaveNewton.lite.GameLogic.Apple;
-import ml.game.android.SaveNewton.lite.GameLogic.Arrow;
-import ml.game.android.SaveNewton.lite.GameLogic.Bow;
-import ml.game.android.SaveNewton.lite.GameLogic.Newton;
-import ml.game.android.SaveNewton.lite.GameLogic.TipText;
+import ml.game.android.SaveNewton.GameLogic.Apple;
+import ml.game.android.SaveNewton.GameLogic.Arrow;
+import ml.game.android.SaveNewton.GameLogic.Bow;
+import ml.game.android.SaveNewton.GameLogic.Newton;
+import ml.game.android.SaveNewton.GameLogic.TipText;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrixColorFilter;

@@ -1,4 +1,4 @@
-package ml.game.android.SaveNewton.lite;
+package ml.game.android.SaveNewton;
 
 import android.content.Context;
 import android.media.AsyncPlayer;
@@ -57,10 +57,10 @@ public class AudioResource{
         String bgmURI = null;
         switch(bgmID){
         case BGMID_Title:
-            bgmURI = "android.resource://ml.game.android.SaveNewton.lite/raw/titlebgm";
+            bgmURI = "android.resource://ml.game.android.SaveNewton/raw/titlebgm";
             break;
         case BGMID_Play:
-            bgmURI = "android.resource://ml.game.android.SaveNewton.lite/raw/playbgm";
+            bgmURI = "android.resource://ml.game.android.SaveNewton/raw/playbgm";
             break;
         }
         if (bgmURI!=null){

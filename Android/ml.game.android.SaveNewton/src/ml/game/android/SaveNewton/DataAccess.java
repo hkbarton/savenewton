@@ -1,4 +1,4 @@
-package ml.game.android.SaveNewton.lite;
+package ml.game.android.SaveNewton;
 
 import java.util.ArrayList;
 import java.util.HashMap;

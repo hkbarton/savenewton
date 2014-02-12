@@ -1,4 +1,4 @@
-package ml.game.android.SaveNewton.lite;
+package ml.game.android.SaveNewton;
 
 import java.util.List;
 import java.util.Map;
