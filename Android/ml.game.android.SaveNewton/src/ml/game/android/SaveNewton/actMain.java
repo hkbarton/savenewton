@@ -24,6 +24,7 @@ import android.widget.Toast;
 public class actMain extends BaseGameActivity {
     private static final int MenuType_Main = 0;
     private static final int MenuType_Options = 1;
+    private static final int MenuType_Online = 2;
     private static final int LoadEvent_FinishLoadResource = 0;
     
     private boolean mLoadComplete = false;
@@ -33,6 +34,7 @@ public class actMain extends BaseGameActivity {
     private RelativeLayout mainly;
     private Animation[] mMenuInAnimations, mMenuOutAnimations;
     private AdView mAdView;
+    private boolean isUserClickOnlineMenu = false;
     
     private Handler mLoadEventHandler = new Handler(){
         @Override
@@ -191,6 +193,20 @@ public class actMain extends BaseGameActivity {
         }
     }
     
+    private void animateInMenu(){
+    	btnMenu1.startAnimation(mMenuInAnimations[0]);
+        btnMenu2.startAnimation(mMenuInAnimations[1]);
+        btnMenu3.startAnimation(mMenuInAnimations[2]);
+        btnMenu4.startAnimation(mMenuInAnimations[3]);
+    }
+    
+    private void animateOutMenu(){
+    	btnMenu1.startAnimation(mMenuOutAnimations[0]);
+        btnMenu2.startAnimation(mMenuOutAnimations[1]);
+        btnMenu3.startAnimation(mMenuOutAnimations[2]);
+        btnMenu4.startAnimation(mMenuOutAnimations[3]);
+    }
+    
     private void initMenuLayout(){
         mMenuType = MenuType_Main;
         btnMenu4 = new ImageView(this);
@@ -228,10 +244,7 @@ public class actMain extends BaseGameActivity {
         menu1Ly.addRule(RelativeLayout.ABOVE, btnMenu2.getId());
         menu1Ly.addRule(RelativeLayout.ALIGN_LEFT, btnMenu2.getId());
         mainly.addView(btnMenu1, menu1Ly);
-        btnMenu1.startAnimation(mMenuInAnimations[0]);
-        btnMenu2.startAnimation(mMenuInAnimations[1]);
-        btnMenu3.startAnimation(mMenuInAnimations[2]);
-        btnMenu4.startAnimation(mMenuInAnimations[3]);
+        animateInMenu();
     }
     
     private void setMenuEvent(){
@@ -245,23 +258,31 @@ public class actMain extends BaseGameActivity {
             btnMenu2.setOnClickListener(menuVibration_Click);
             btnMenu3.setOnClickListener(menuLevel_Click);
             btnMenu4.setOnClickListener(menuToMainMenu_Click);
+        }else if (mMenuType==MenuType_Online){
+        	// TODO
+        	btnMenu4.setOnClickListener(menuToMainMenu_Click);
         }
     }
     
     private void toOptionsMenu(){
         mMenuType = MenuType_Options;
-        btnMenu1.startAnimation(mMenuOutAnimations[0]);
-        btnMenu2.startAnimation(mMenuOutAnimations[1]);
-        btnMenu3.startAnimation(mMenuOutAnimations[2]);
-        btnMenu4.startAnimation(mMenuOutAnimations[3]);
+        animateOutMenu();
+    }
+    
+    private void toOnlineMenu(){
+    	// BaseGameActivity will try to connect google service and call onSignInSucceeded automatic
+    	// But we don't want show online menu until user click online button
+    	// so we need check if this is triggered by user actually
+    	if (btnMenu1!=null && isUserClickOnlineMenu){
+    		isUserClickOnlineMenu = false;
+    		mMenuType = MenuType_Online;
+    		animateOutMenu();
+    	}
     }
     
     private void toMainMenu(){
         mMenuType = MenuType_Main;
-        btnMenu1.startAnimation(mMenuOutAnimations[0]);
-        btnMenu2.startAnimation(mMenuOutAnimations[1]);
-        btnMenu3.startAnimation(mMenuOutAnimations[2]);
-        btnMenu4.startAnimation(mMenuOutAnimations[3]);
+        animateOutMenu();
     }
     
     private void resetMenuByType(){
@@ -283,6 +304,11 @@ public class actMain extends BaseGameActivity {
             }
             setMenuLevelByLevelData();
             btnMenu4.setImageResource(R.drawable.wbtnreturn);
+        }else if (mMenuType==MenuType_Online){
+        	btnMenu1.setImageResource(R.drawable.wbtnonlinetop);
+        	btnMenu2.setImageResource(R.drawable.wbtnonlinelb);
+            btnMenu3.setImageResource(R.drawable.wbtnonlineac);
+        	btnMenu4.setImageResource(R.drawable.wbtnreturn);
         }
         setMenuEvent();
     }
@@ -305,10 +331,7 @@ public class actMain extends BaseGameActivity {
         @Override
         public void onAnimationEnd(Animation animation) {
             resetMenuByType();
-            btnMenu1.startAnimation(mMenuInAnimations[0]);
-            btnMenu2.startAnimation(mMenuInAnimations[1]);
-            btnMenu3.startAnimation(mMenuInAnimations[2]);
-            btnMenu4.startAnimation(mMenuInAnimations[3]);
+            animateInMenu();
         }
         @Override
         public void onAnimationRepeat(Animation animation) {}
@@ -422,6 +445,7 @@ public class actMain extends BaseGameActivity {
         @Override
         public void onClick(View v) {
         	actMain.this.beginUserInitiatedSignIn();
+        	isUserClickOnlineMenu = true;
         }
     };
     
@@ -461,6 +485,6 @@ public class actMain extends BaseGameActivity {
 
 	@Override
 	public void onSignInSucceeded() {
-		
+		toOnlineMenu();
 	}
 }
