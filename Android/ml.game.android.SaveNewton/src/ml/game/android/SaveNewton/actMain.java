@@ -34,7 +34,6 @@ public class actMain extends BaseGameActivity {
     private RelativeLayout mainly;
     private Animation[] mMenuInAnimations, mMenuOutAnimations;
     private AdView mAdView;
-    private boolean isUserClickOnlineMenu = false;
     
     private Handler mLoadEventHandler = new Handler(){
         @Override
@@ -270,14 +269,8 @@ public class actMain extends BaseGameActivity {
     }
     
     private void toOnlineMenu(){
-    	// BaseGameActivity will try to connect google service and call onSignInSucceeded automatic
-    	// But we don't want show online menu until user click online button
-    	// so we need check if this is triggered by user actually
-    	if (btnMenu1!=null && isUserClickOnlineMenu){
-    		isUserClickOnlineMenu = false;
-    		mMenuType = MenuType_Online;
-    		animateOutMenu();
-    	}
+    	mMenuType = MenuType_Online;
+    	animateOutMenu();
     }
     
     private void toMainMenu(){
@@ -445,7 +438,6 @@ public class actMain extends BaseGameActivity {
         @Override
         public void onClick(View v) {
         	actMain.this.beginUserInitiatedSignIn();
-        	isUserClickOnlineMenu = true;
         }
     };
     
