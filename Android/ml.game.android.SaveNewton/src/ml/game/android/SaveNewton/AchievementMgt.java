@@ -7,24 +7,24 @@ import android.content.Context;
 
 public class AchievementMgt{
     // Achievement Description
-    // Junior Shooter, Score>=30 in One Round
-    private static final int JuniorShooter_Score = 30;
-    // Senior Shooter, Score>=60 in One Round
-    private static final int SeniorShooter_Score = 60;
-    // Shooting Master, Score>=120 in One Round
-    private static final int ShootingMaster_Score = 120;
-    // Compote, continue hit apple 20 times and more in One Round
-    private static final int Compote_HitCount = 20;
-    // Fruit Feast, continue hit apple 40 times and more in One Round
-    private static final int FruitFeast_HitCount = 40;
-    // Apple Killer, continue hit apple 80 times and more in One Round
-    private static final int AppleKiller_HitCount = 80;
+    // Junior Shooter, Score>=50 in One Round
+    private static final int JuniorShooter_Score = 50;
+    // Senior Shooter, Score>=100 in One Round
+    private static final int SeniorShooter_Score = 100;
+    // Shooting Master, Score>=200 in One Round
+    private static final int ShootingMaster_Score = 200;
+    // Compote, continue hit apple 30 times and more in One Round
+    private static final int Compote_HitCount = 30;
+    // Fruit Feast, continue hit apple 50 times and more in One Round
+    private static final int FruitFeast_HitCount = 50;
+    // Apple Killer, continue hit apple 100 times and more in One Round
+    private static final int AppleKiller_HitCount = 100;
     // Skill Student, hit apple 20 times using weak bow in One Round
     private static final int SkillStudent_HitCount = 20;
     // Skill Master, continue hit apple 30 times using weak bow in One Round
     private static final int SkillMaster_ContinueHitCount = 30;
-    // Apple Defender, hide achievement, continue miss apple 30 times in One Round
-    private static final int AppleDefender_MissCount = 30;
+    // Apple Defender, hide achievement, continue miss apple 50 times in One Round
+    private static final int AppleDefender_MissCount = 50;
     // Scientist Killer, hide achievement, kill Newton 100 times
     private static final int ScientistKiller_Count = 100;
     

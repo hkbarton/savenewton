@@ -105,7 +105,7 @@ public class GameMainThread extends Thread{
                 case Apple.AppleType_Weak:
                     canvas.drawBitmap(GameResource.GreenApple[apple.CurrentShowFrame], drawMatrix, transPaint);
                     break;
-                case Apple.AppleType_Special:
+                case Apple.AppleType_LowGravity:
                     canvas.drawBitmap(GameResource.SpecialApple[apple.CurrentShowFrame], drawMatrix, transPaint);
                     break;
                 }
@@ -113,7 +113,6 @@ public class GameMainThread extends Thread{
             // draw tip text
             drawTipText(canvas, drawMatrix, transPaint);
             // draw score
-            drawAllProgress(canvas);
             drawNumber(canvas, 
                     GameResource.GameStageWidth - GameResource.ScoreRightPosFromRightBorder,
                     GameResource.StatInfoTopPos, AchievementMgt.StatData.Score);
@@ -178,52 +177,6 @@ public class GameMainThread extends Thread{
                 mGameViewHolder.unlockCanvasAndPost(canvas);
             }
         }
-    }
-    
-    private void drawAllProgress(Canvas canvas){
-        // draw continue hit award
-        int leftPos = drawScoreProgress(canvas, GameResource.BonusProgress, GameResource.ProgressBarStartLeftPos, 
-                mGameLogic.ContinueHitCount, GameLogic.MaxContinueHitCount, GameLogic.GoldenContinueHit);
-        // draw continue miss award
-        drawScoreProgress(canvas, GameResource.PunishProgress, leftPos+GameResource.ProgressBarSplitWidth,
-                mGameLogic.ContinueMissCount, GameLogic.MaxContinueMissCount, GameLogic.GoldenContinueMiss);
-    }
-    
-    private int drawScoreProgress(Canvas canvas, Bitmap[] res, int startLeftPos, 
-            int progressValue, int progressMax, int progressAwardValue){
-        int topPos = GameResource.StatInfoTopPos;
-        int leftPos = startLeftPos;
-        int normalIncreaseLeftPos = res[3].getWidth();
-        canvas.drawBitmap(res[0], leftPos, topPos, null);
-        leftPos += res[0].getWidth();
-        if (progressValue < 1){
-            canvas.drawBitmap(res[1], leftPos, topPos, null);
-        }else{
-            canvas.drawBitmap(res[2], leftPos, topPos, null);
-        }
-        leftPos += res[1].getWidth();
-        for (int i=2;i<progressMax;i++){
-            if (i <= progressValue){
-                if(i==progressAwardValue){
-                    canvas.drawBitmap(res[6], leftPos, topPos, null);
-                }else{
-                    canvas.drawBitmap(res[4], leftPos, topPos, null);
-                }
-            }else{
-                if(i==progressAwardValue){
-                    canvas.drawBitmap(res[5], leftPos, topPos, null);
-                }else{
-                    canvas.drawBitmap(res[3], leftPos, topPos, null);
-                }
-            }
-            leftPos += normalIncreaseLeftPos;
-        }
-        if (progressValue==progressMax){
-            canvas.drawBitmap(res[8], leftPos, topPos, null);
-        }else{
-            canvas.drawBitmap(res[7], leftPos, topPos, null);
-        }
-        return leftPos += res[8].getWidth();
     }
     
     private void drawTipText(Canvas canvas, Matrix drawMatrix, Paint transPaint){

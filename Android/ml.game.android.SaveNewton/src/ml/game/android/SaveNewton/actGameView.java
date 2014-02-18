@@ -2,7 +2,6 @@ package ml.game.android.SaveNewton;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,8 +24,9 @@ import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.*;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
-public class actGameView extends Activity{
+public class actGameView extends BaseGameActivity{
     private Vibrator mVibrator;
     private GameView mGameView;
     private RelativeLayout mMainLayout;
@@ -63,7 +63,7 @@ public class actGameView extends Activity{
             case GameLogic.GameEvent_AppleHitNewton:
                 AudioResource.playSoundEffect(AudioResource.SoundEffectID_AppleHit);
                 break;
-            case GameLogic.GameEvent_SpecialCountDown:
+            case GameLogic.GameEvent_LowGravityCountDown:
                 if (DataAccess.Pref_IsVibration && mVibrator!=null){
                     mVibrator.vibrate(60);
                 }
@@ -376,7 +376,19 @@ public class actGameView extends Activity{
     private OnClickListener btnPostOnline_Click = new OnClickListener(){
         @Override
         public void onClick(View v) {
-            // Update Google Play Service Game Client
+        	actGameView.this.beginUserInitiatedSignIn();
+        	// TODO post score and achievement online
         }
     };
+
+    // Google Play Service Game Client Callback
+	@Override
+	public void onSignInFailed() {
+		// do nothing here, use default action that BaseGameUtils provide
+	}
+
+	@Override
+	public void onSignInSucceeded() {
+		// TODO post score and achievement online
+	}
 }

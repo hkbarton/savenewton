@@ -21,9 +21,9 @@ public final class GameResource{
     public static final int GoldenBowIcon_FrameIndex = 1;
     public static final int WeakBowIcon_FrameIndex = 2;
     public static final int GoldenBow_ArrowCount = 3;
-    public static final int ScaleTipText_GoldenApp_Frame = 0;
-    public static final int ScaleTipText_GreenApp_Frame = 1;
-    public static final int ScaleTipText_SpecialGra_Frame = 2;
+    public static final int ScaleTipText_GoldenApple_Frame = 0;
+    public static final int ScaleTipText_GreenApple_Frame = 1;
+    public static final int ScaleTipText_LowGravityApple_Frame = 2;
     // fake, if ScaleTipText is CountDown number, it will use drawNumber instead
     public static final int ScaleTipText_CountDown_Frame = 3;
     public static final int NumberSize_Normal = 0;
@@ -50,7 +50,6 @@ public final class GameResource{
     
     public static final int NumberSplitWidth = 2; // in pixel
     public static final int ScoreRightPosFromRightBorder = 4;
-    public static final int ProgressBarSplitWidth = 5; // in pixel
     
     private static final int GameStage_MaxCutHeight = 50;
     private static final int GameStage_MaxCutWidth = 180;
@@ -93,7 +92,6 @@ public final class GameResource{
     public static Bitmap[] BowIcon;
     public static Bitmap[] Arrow;
     public static Bitmap WeakArrowGroundPart;
-    public static Bitmap[] BonusProgress, PunishProgress;
     public static Bitmap[] Numbers, MNumbers, LNumbers, SLNumbers, NumberSymbols;
     public static Bitmap[] ScaleTipTexts;
     public static Bitmap PauseGameTip;
@@ -116,7 +114,6 @@ public final class GameResource{
     public static int[] GoldenArrowRelativeTopPos;
     public static int[] NumberWidth;
     public static int StatInfoTopPos;
-    public static int ProgressBarStartLeftPos;
     public static int[] ScaleTipTextWidth, ScaleTipTextHeight;
     public static float GameCenterLeftPos, GameCenterTopPos;
     public static float PauseGameTipLeftPos, PauseGameTipTopPos;
@@ -241,7 +238,6 @@ public final class GameResource{
         initAppleResource(res, hScaleRate);
         initBowRelated(res, hScaleRate, wScaleRate);
         initArrow(res, wScaleRate);
-        initGameStatProgress(res, wScaleRate);
         initText(res, hScaleRate);
         initNewton(res, hScaleRate);
         initNewtonSpeakText(res, hScaleRate);
@@ -393,85 +389,6 @@ public final class GameResource{
         WeakArrowGroundPart = Bitmap.createScaledBitmap(WeakArrowGroundPart, 
                 (int)(WeakArrowGroundPart.getWidth()*wScaleRate), 
                 (int)(WeakArrowGroundPart.getHeight()*wScaleRate), true);
-    }
-    
-    private static void initGameStatProgress(Resources res, float wScaleRate){
-        // Bonus Progress
-        BonusProgress = new Bitmap[9];
-        BonusProgress[0] = BitmapFactory.decodeResource(res, R.drawable.bonuspb0, sNoScaleOp);
-        BonusProgress[0] = Bitmap.createScaledBitmap(BonusProgress[0], 
-                (int)(BonusProgress[0].getWidth()*wScaleRate), 
-                (int)(BonusProgress[0].getHeight()*wScaleRate), true);
-        BonusProgress[1] = BitmapFactory.decodeResource(res, R.drawable.bonuspb1, sNoScaleOp);
-        BonusProgress[1] = Bitmap.createScaledBitmap(BonusProgress[1], 
-                (int)(BonusProgress[1].getWidth()*wScaleRate), 
-                (int)(BonusProgress[1].getHeight()*wScaleRate), true);
-        BonusProgress[2] = BitmapFactory.decodeResource(res, R.drawable.bonuspb2, sNoScaleOp);
-        BonusProgress[2] = Bitmap.createScaledBitmap(BonusProgress[2], 
-                (int)(BonusProgress[2].getWidth()*wScaleRate), 
-                (int)(BonusProgress[2].getHeight()*wScaleRate), true);
-        BonusProgress[3] = BitmapFactory.decodeResource(res, R.drawable.bonuspb3, sNoScaleOp);
-        BonusProgress[3] = Bitmap.createScaledBitmap(BonusProgress[3], 
-                (int)(BonusProgress[3].getWidth()*wScaleRate), 
-                (int)(BonusProgress[3].getHeight()*wScaleRate), true);
-        BonusProgress[4] = BitmapFactory.decodeResource(res, R.drawable.bonuspb4, sNoScaleOp);
-        BonusProgress[4] = Bitmap.createScaledBitmap(BonusProgress[4], 
-                (int)(BonusProgress[4].getWidth()*wScaleRate), 
-                (int)(BonusProgress[4].getHeight()*wScaleRate), true);
-        BonusProgress[5] = BitmapFactory.decodeResource(res, R.drawable.bonuspb5, sNoScaleOp);
-        BonusProgress[5] = Bitmap.createScaledBitmap(BonusProgress[5], 
-                (int)(BonusProgress[5].getWidth()*wScaleRate), 
-                (int)(BonusProgress[5].getHeight()*wScaleRate), true);
-        BonusProgress[6] = BitmapFactory.decodeResource(res, R.drawable.bonuspb6, sNoScaleOp);
-        BonusProgress[6] = Bitmap.createScaledBitmap(BonusProgress[6], 
-                (int)(BonusProgress[6].getWidth()*wScaleRate), 
-                (int)(BonusProgress[6].getHeight()*wScaleRate), true);
-        BonusProgress[7] = BitmapFactory.decodeResource(res, R.drawable.bonuspb7, sNoScaleOp);
-        BonusProgress[7] = Bitmap.createScaledBitmap(BonusProgress[7], 
-                (int)(BonusProgress[7].getWidth()*wScaleRate), 
-                (int)(BonusProgress[7].getHeight()*wScaleRate), true);
-        BonusProgress[8] = BitmapFactory.decodeResource(res, R.drawable.bonuspb8, sNoScaleOp);
-        BonusProgress[8] = Bitmap.createScaledBitmap(BonusProgress[8], 
-                (int)(BonusProgress[8].getWidth()*wScaleRate), 
-                (int)(BonusProgress[8].getHeight()*wScaleRate), true);
-        // Punish Progress
-        PunishProgress = new Bitmap[9];
-        PunishProgress[0] = BitmapFactory.decodeResource(res, R.drawable.punishpb0, sNoScaleOp);
-        PunishProgress[0] = Bitmap.createScaledBitmap(PunishProgress[0], 
-                (int)(PunishProgress[0].getWidth()*wScaleRate), 
-                (int)(PunishProgress[0].getHeight()*wScaleRate), true);
-        PunishProgress[1] = BitmapFactory.decodeResource(res, R.drawable.punishpb1, sNoScaleOp);
-        PunishProgress[1] = Bitmap.createScaledBitmap(PunishProgress[1], 
-                (int)(PunishProgress[1].getWidth()*wScaleRate), 
-                (int)(PunishProgress[1].getHeight()*wScaleRate), true);
-        PunishProgress[2] = BitmapFactory.decodeResource(res, R.drawable.punishpb2, sNoScaleOp);
-        PunishProgress[2] = Bitmap.createScaledBitmap(PunishProgress[2], 
-                (int)(PunishProgress[2].getWidth()*wScaleRate), 
-                (int)(PunishProgress[2].getHeight()*wScaleRate), true);
-        PunishProgress[3] = BitmapFactory.decodeResource(res, R.drawable.punishpb3, sNoScaleOp);
-        PunishProgress[3] = Bitmap.createScaledBitmap(PunishProgress[3], 
-                (int)(PunishProgress[3].getWidth()*wScaleRate), 
-                (int)(PunishProgress[3].getHeight()*wScaleRate), true);
-        PunishProgress[4] = BitmapFactory.decodeResource(res, R.drawable.punishpb4, sNoScaleOp);
-        PunishProgress[4] = Bitmap.createScaledBitmap(PunishProgress[4], 
-                (int)(PunishProgress[4].getWidth()*wScaleRate), 
-                (int)(PunishProgress[4].getHeight()*wScaleRate), true);
-        PunishProgress[5] = BitmapFactory.decodeResource(res, R.drawable.punishpb5, sNoScaleOp);
-        PunishProgress[5] = Bitmap.createScaledBitmap(PunishProgress[5], 
-                (int)(PunishProgress[5].getWidth()*wScaleRate), 
-                (int)(PunishProgress[5].getHeight()*wScaleRate), true);
-        PunishProgress[6] = BitmapFactory.decodeResource(res, R.drawable.punishpb6, sNoScaleOp);
-        PunishProgress[6] = Bitmap.createScaledBitmap(PunishProgress[6], 
-                (int)(PunishProgress[6].getWidth()*wScaleRate), 
-                (int)(PunishProgress[6].getHeight()*wScaleRate), true);
-        PunishProgress[7] = BitmapFactory.decodeResource(res, R.drawable.punishpb7, sNoScaleOp);
-        PunishProgress[7] = Bitmap.createScaledBitmap(PunishProgress[7], 
-                (int)(PunishProgress[7].getWidth()*wScaleRate), 
-                (int)(PunishProgress[7].getHeight()*wScaleRate), true);
-        PunishProgress[8] = BitmapFactory.decodeResource(res, R.drawable.punishpb8, sNoScaleOp);
-        PunishProgress[8] = Bitmap.createScaledBitmap(PunishProgress[8], 
-                (int)(PunishProgress[8].getWidth()*wScaleRate), 
-                (int)(PunishProgress[8].getHeight()*wScaleRate), true);
     }
     
     private static void initText(Resources res, float hScaleRate){
@@ -777,7 +694,6 @@ public final class GameResource{
             + NumberWidth[NumberSize_Normal] + NumberSplitWidth;
         BowIconCountTopPos = (int)(BowIconTopPos + BowIcon[0].getHeight() - Numbers[0].getHeight());
         StatInfoTopPos = BowIconTopPos - 3;
-        ProgressBarStartLeftPos = BowStatusBar.getWidth() + 3;
         ScaleTipTextWidth = new int[ScaleTipTexts.length];
         ScaleTipTextHeight = new int[ScaleTipTexts.length];
         for (int i=0;i<ScaleTipTexts.length;i++){

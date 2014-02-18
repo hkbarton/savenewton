@@ -28,7 +28,7 @@ public class GameLogic{
     public static final int GameEvent_ArrowEnd = 4;
     public static final int GameEvent_EarnPrize = 5;
     public static final int GameEvent_AppleHitNewton = 6;
-    public static final int GameEvent_SpecialCountDown = 7;
+    public static final int GameEvent_LowGravityCountDown = 7;
     public static final int GameEvent_NewtonSpeak = 8;
     public static final int GameEvent_GamePause = 100;
     public static final int GameEvent_GameResume = 101;
@@ -39,18 +39,24 @@ public class GameLogic{
     // base gravity in milliseconds, means the time cost that apple fall from top to bottom
     private static final int BaseGravity = 5000;
     private static final int GameOverGravity = 2000;
-    private static final int SpecialApple_GravityRate = 5;
-    private static final int SpecialApple_PersistTime = 6000;
-    private static final int SpecialApple_CoolTime = 20000;
     private static final int GameOveringTime = 2500;
     private static final float CloudRunSpeed = 22000f;
     
-    public static final int MaxContinueHitCount = 8;
-    public static final int MaxContinueMissCount = 6;
-    public static final int GoldenContinueHit = 5;
-    public static final int GoldenContinueMiss = 3;
-    // if length of apples greater than this number, will random a special apple
-    private static final int SpecialAppleCreateConditionCnt = 5; 
+    // Special Apple Setting
+    private static final int SpecialApple_CoolTime = 5000;
+    private long mLastSpecialAppleCreateTime;
+    // Golden Apple for strong bow
+    private static final int GoldenAppleChance = 50;
+    // Green Apple for weak but high score bow
+    private static final int GreenAppleChance = 50;
+    // Gravity Apple
+    private static final int LowGravityRate = 5;
+    private static final int LowGravityAppleCreateConditionCnt = 5; // condition screen apple count of allow low gravity apple
+    private static final int LowGravityAppleChance = 3; // means 1/3
+    private static final int LowGravityApple_PersistTime = 6000;
+    private long mLowGravityTime;
+    private boolean mIsLowGravity;
+    private boolean[] mLowGravityAppCountDownShowFlag;
     
     // the time space in millisecond between two apple create
     // the minimum value of this should greater than AppleGrownupSpeed
@@ -72,13 +78,8 @@ public class GameLogic{
     private Stack<Integer> mNextAppleType;
     private int mGravity, mCurGravity;
     private int mAppleCreateSpeedMinValue;
-    private long mLastSpecialAppleCreateTime;
-    private long mSpecialGravityTime;
-    private boolean mIsSpecialGravity;
-    private boolean[] mSpecialAppCountDownShowFlag;
     private int mGameOveringTime;
     
-    public int ContinueHitCount, ContinueMissCount;
     public float CloudLeftPos, CloudTopPos1, CloudTopPos2;
     
     private List<Apple> mRemovedApple;
@@ -102,7 +103,7 @@ public class GameLogic{
         mAppleCreateSpeedMinValue = (int)(AppleCreateSpeed_BaseMinValue + 
                 AppleCreateSpeed_BaseMinValue * (1-Default_DifficultyLevel));
         mNextAppleType = new Stack<Integer>();
-        mSpecialAppCountDownShowFlag = new boolean[SpecialApple_PersistTime/1000];
+        mLowGravityAppCountDownShowFlag = new boolean[LowGravityApple_PersistTime/1000];
         CloudLeftPos = GameResource.GameStageCloudInitLeftPos;
         CloudTopPos1 = GameResource.GameStageCloudTopPos1;
         CloudTopPos2 = GameResource.GameStageCloudTopPos2;
@@ -120,22 +121,20 @@ public class GameLogic{
         mStartPauseTime = 0;
         mTotalPauseTime = 0;
         mLastSpecialAppleCreateTime = 0;
-        mSpecialGravityTime = 0;
-        mIsSpecialGravity = false;
+        mLowGravityTime = 0;
+        mIsLowGravity = false;
         Apples.clear();
         mRemovedApple.clear();
         Arrows.clear();
         mRemovedArrow.clear();
         CurBow = new Bow();
         mRandomGenerator = new Random();
-        ContinueHitCount = 0;
-        ContinueMissCount = 0;
         mNextAppleType.clear();
         mNextAppleType.push(Apple.AppleType_Normal);
         Tips.clear();
         mRemovedTips.clear();
         CurNewton = new Newton();
-        resetSpecialAppCountDownShowFlag();
+        resetLowGravityAppCountDownShowFlag();
         mGameOveringTime = 0;
         AchievementMgt.resetRoundStatData();
     }
@@ -192,7 +191,7 @@ public class GameLogic{
                 runTip(timeDisFromLastFrame);
                 removeObject();
                 speedUpAppleCreate(curFrameTime);
-                runSpecialGravity(timeDisFromLastFrame);
+                runLowGravity(timeDisFromLastFrame);
                 if (CurNewton!=null){
                     CurNewton.run(timeDisFromLastFrame);
                 }
@@ -247,14 +246,22 @@ public class GameLogic{
             int appleType = mNextAppleType.pop();
             Apples.add(new Apple(mRandomGenerator.nextInt(GameResource.AppleCreatePos_Count), appleType)); 
             mLastAppleCreateTime = curFrameTime;
-            if (Apples.size()>=SpecialAppleCreateConditionCnt 
-                    && (curFrameTime - mLastSpecialAppleCreateTime) > SpecialApple_CoolTime
-                    && mRandomGenerator.nextInt(3)>1){
-                mLastSpecialAppleCreateTime = curFrameTime;
-                mNextAppleType.push(Apple.AppleType_Special);
+            // check if need create special apple
+            if (curFrameTime - mLastSpecialAppleCreateTime > SpecialApple_CoolTime){
+            	// generate low gravity apple
+            	if (mRandomGenerator.nextInt(GoldenAppleChance) > GoldenAppleChance-2){
+            		mNextAppleType.push(Apple.AppleType_Golden);
+            	}else if (mRandomGenerator.nextInt(GreenAppleChance) > GreenAppleChance-2){
+            		mNextAppleType.push(Apple.AppleType_Weak);
+            	}else if (Apples.size()>=LowGravityAppleCreateConditionCnt 
+	                    && mRandomGenerator.nextInt(LowGravityAppleChance) > LowGravityAppleChance-2){
+	                mNextAppleType.push(Apple.AppleType_LowGravity);
+	            }
             }
-            if (mNextAppleType.isEmpty()){
-                mNextAppleType.push(Apple.AppleType_Normal);
+            if (!mNextAppleType.isEmpty()){ // have alreday create special apple
+            	mLastSpecialAppleCreateTime = curFrameTime;
+            }else{
+            	mNextAppleType.push(Apple.AppleType_Normal);
             }
         }
     }
@@ -281,28 +288,8 @@ public class GameLogic{
     }
     
     private void hitApple(int appleType, int arrowType, float hitCenterLeftPos, float hitCenterTopPos){
-        ContinueHitCount++;
-        ContinueMissCount = 0;
         AchievementMgt.StatData.ContinueShootCount++;
         AchievementMgt.StatData.ContinueMissCount = 0;
-        if (ContinueHitCount > MaxContinueHitCount){
-            ContinueHitCount = 1;
-        }else if (ContinueHitCount==GoldenContinueHit){
-            mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
-            mNextAppleType.push(Apple.AppleType_Golden);
-            Tips.add(new TipText(GameResource.ScaleTipText_GoldenApp_Frame, 
-                    hitCenterLeftPos, hitCenterTopPos,
-                    TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
-        }else if (ContinueHitCount==MaxContinueHitCount){
-            mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
-            mNextAppleType.push(Apple.AppleType_Weak);
-            Tips.add(new TipText(GameResource.ScaleTipText_GreenApp_Frame, 
-                    hitCenterLeftPos, hitCenterTopPos,
-                    TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
-            if (CurNewton!=null){
-                CurNewton.Speaking(Newton.SpeakType_ContinueHit);
-            }
-        }
         int addedScore = Default_AppleScore;
         if (arrowType==Arrow.ArrowType_Weak){
             addedScore *= WeakBow_ScoreMultiple;
@@ -313,19 +300,21 @@ public class GameLogic{
         }
         switch(appleType){
         case Apple.AppleType_Golden:
-        	// TODO instead change weapon immediately, save weapon ammo instead
+        	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
+        	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
             CurBow.setBowType(Bow.BowType_Golden);
             break;
         case Apple.AppleType_Weak:
-        	// TODO instead change weapon immediately, save weapon ammo instead
+        	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
+        	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
             CurBow.setBowType(Bow.BowType_Weak);
             break;
-        case Apple.AppleType_Special:
-            mCurGravity = mGravity * SpecialApple_GravityRate;
-            mCurAppleCreateSpeed = mAppleCreateSpeed * SpecialApple_GravityRate;
-            mSpecialGravityTime = 0;
-            mIsSpecialGravity = true;
-            Tips.add(new TipText(GameResource.ScaleTipText_SpecialGra_Frame,
+        case Apple.AppleType_LowGravity:
+            mCurGravity = mGravity * LowGravityRate;
+            mCurAppleCreateSpeed = mAppleCreateSpeed * LowGravityRate;
+            mLowGravityTime = 0;
+            mIsLowGravity = true;
+            Tips.add(new TipText(GameResource.ScaleTipText_LowGravityApple_Frame,
                     GameResource.GameCenterLeftPos, GameResource.GameCenterTopPos,
                     TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
             break;
@@ -336,29 +325,9 @@ public class GameLogic{
     }
     
     private void missHit(){
-        ContinueMissCount++;
-        ContinueHitCount = 0;
         AchievementMgt.StatData.ContinueMissCount++;
         AchievementMgt.StatData.ContinueShootCount = 0;
         AchievementMgt.StatData.ContinueWeakBowShootCount = 0;
-        if (ContinueMissCount > MaxContinueMissCount){
-            ContinueMissCount = 1;
-        }else if (ContinueMissCount == GoldenContinueMiss){
-            mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
-            mNextAppleType.push(Apple.AppleType_Golden);
-            Tips.add(new TipText(GameResource.ScaleTipText_GoldenApp_Frame, 
-                    GameResource.GameCenterLeftPos, GameResource.GameCenterTopPos,
-                    TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
-        }else if (ContinueMissCount == MaxContinueMissCount){
-            mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
-            mNextAppleType.push(Apple.AppleType_Weak);
-            Tips.add(new TipText(GameResource.ScaleTipText_GreenApp_Frame, 
-                    GameResource.GameCenterLeftPos, GameResource.GameCenterTopPos,
-                    TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
-            if (CurNewton!=null){
-                CurNewton.Speaking(Newton.SpeakType_ContinueMiss);
-            }
-        }
         mGameEventHandler.sendEmptyMessage(GameEvent_StatDataChange);
     }
     
@@ -372,29 +341,29 @@ public class GameLogic{
         }
     }
     
-    private void resetSpecialAppCountDownShowFlag(){
-        for (int i=0;i<mSpecialAppCountDownShowFlag.length;i++){
-            mSpecialAppCountDownShowFlag[i] = false;
+    private void resetLowGravityAppCountDownShowFlag(){
+        for (int i=0;i<mLowGravityAppCountDownShowFlag.length;i++){
+        	mLowGravityAppCountDownShowFlag[i] = false;
         }
     }
     
-    private void runSpecialGravity(int timeDisFromLastFrame){
-        if (mIsSpecialGravity){
-            mSpecialGravityTime += timeDisFromLastFrame;
-            if (mSpecialGravityTime >= SpecialApple_PersistTime){
+    private void runLowGravity(int timeDisFromLastFrame){
+        if (mIsLowGravity){
+        	mLowGravityTime += timeDisFromLastFrame;
+            if (mLowGravityTime >= LowGravityApple_PersistTime){
                 mCurAppleCreateSpeed = mAppleCreateSpeed;
                 mCurGravity = mGravity;
-                mSpecialGravityTime = 0;
-                mIsSpecialGravity = false;
-                resetSpecialAppCountDownShowFlag();
+                mLowGravityTime = 0;
+                mIsLowGravity = false;
+                resetLowGravityAppCountDownShowFlag();
             }else{
-                int remainTime = (int)(SpecialApple_PersistTime - mSpecialGravityTime);
+                int remainTime = (int)(LowGravityApple_PersistTime - mLowGravityTime);
                 int remainTimeInSecond = Math.round(remainTime / 1000f);
                 int roundRemainTime = remainTimeInSecond * 1000;
-                if (roundRemainTime < SpecialApple_PersistTime && remainTime <= roundRemainTime
-                        && !mSpecialAppCountDownShowFlag[remainTimeInSecond]){
-                    mGameEventHandler.sendEmptyMessage(GameEvent_SpecialCountDown);
-                    mSpecialAppCountDownShowFlag[remainTimeInSecond] = true;
+                if (roundRemainTime < LowGravityApple_PersistTime && remainTime <= roundRemainTime
+                        && !mLowGravityAppCountDownShowFlag[remainTimeInSecond]){
+                    mGameEventHandler.sendEmptyMessage(GameEvent_LowGravityCountDown);
+                    mLowGravityAppCountDownShowFlag[remainTimeInSecond] = true;
                     Tips.add(new TipText(GameResource.ScaleTipText_CountDown_Frame,
                             GameResource.GameCenterLeftPos, GameResource.GameCenterTopPos, 
                              TipText.ScaleTextTipScaleTime_Fast, TipText.ScaleTextTipRemoveTime_Fast, 
@@ -408,7 +377,7 @@ public class GameLogic{
         public static final int AppleType_Normal = 0;
         public static final int AppleType_Golden = 1;
         public static final int AppleType_Weak = 2;
-        public static final int AppleType_Special = 3;
+        public static final int AppleType_LowGravity = 3;
         
         private static final int AppleStatus_Normal = 0;
         private static final int AppleStatus_Exploded = 1;
