@@ -19,7 +19,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 public class actMain extends BaseGameActivity {
     private static final int MenuType_Main = 0;
@@ -255,7 +254,7 @@ public class actMain extends BaseGameActivity {
         }else if (mMenuType==MenuType_Options){
             btnMenu1.setOnClickListener(menuSound_Click);
             btnMenu2.setOnClickListener(menuVibration_Click);
-            btnMenu3.setOnClickListener(menuLevel_Click);
+            // TODO btnMenu3.setOnClickListener(menuLevel_Click);
             btnMenu4.setOnClickListener(menuToMainMenu_Click);
         }else if (mMenuType==MenuType_Online){
         	// TODO
@@ -295,7 +294,6 @@ public class actMain extends BaseGameActivity {
             }else{
                 btnMenu2.setImageResource(R.drawable.wbtnvibrationoff);
             }
-            setMenuLevelByLevelData();
             btnMenu4.setImageResource(R.drawable.wbtnreturn);
         }else if (mMenuType==MenuType_Online){
         	btnMenu1.setImageResource(R.drawable.wbtnonlinetop);
@@ -304,20 +302,6 @@ public class actMain extends BaseGameActivity {
         	btnMenu4.setImageResource(R.drawable.wbtnreturn);
         }
         setMenuEvent();
-    }
-    
-    private void setMenuLevelByLevelData(){
-        if (DataAccess.Pref_Level==GameLogic.DifficultyLevel_Training){
-            btnMenu3.setImageResource(R.drawable.wbtnlevel0);
-        }else if (DataAccess.Pref_Level==GameLogic.DifficultyLevel_Easy){
-            btnMenu3.setImageResource(R.drawable.wbtnlevel1);
-        }else if (DataAccess.Pref_Level==GameLogic.DifficultyLevel_Normal){
-            btnMenu3.setImageResource(R.drawable.wbtnlevel2);
-        }else if (DataAccess.Pref_Level==GameLogic.DifficultyLevel_Hard){
-            btnMenu3.setImageResource(R.drawable.wbtnlevel3);
-        }else if (DataAccess.Pref_Level==GameLogic.DifficultyLevel_Crazy){
-            btnMenu3.setImageResource(R.drawable.wbtnlevel4);
-        }
     }
     
     private AnimationListener mMenuOutAnimation_Listener = new AnimationListener(){
@@ -452,14 +436,6 @@ public class actMain extends BaseGameActivity {
         @Override
         public void onClick(View v) {
             changePrefVibration();
-        }
-    };
-    
-    private OnClickListener menuLevel_Click = new OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            DataAccess.addLevelPref(actMain.this);
-            setMenuLevelByLevelData();
         }
     };
     

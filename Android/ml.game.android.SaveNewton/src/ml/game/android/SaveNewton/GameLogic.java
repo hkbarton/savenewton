@@ -7,7 +7,15 @@ import java.util.Stack;
 
 import android.os.Handler;
 
+// develop note
+// 1. Golden apple is strong bow, green apple is weak bow, each contain 5 ammo
+// 2. 1 apple = 1 apple score, but *2 when shot by weak bow
+
 public class GameLogic{
+	public static final float Default_DifficultyLevel = 1.4f;
+	public static final int Default_AppleScore = 1;
+	public static final int WeakBow_ScoreMultiple = 2;
+	
     public static final int GameStatus_Running = 0;
     public static final int GameStatus_Pause = 1;
     public static final int GameStatus_GameOvering = 2;
@@ -28,16 +36,6 @@ public class GameLogic{
     public static final int GameEvent_GameOver = 103;
     public static final int GameEvent_StatDataChange = 200;
     
-    public static final float DifficultyLevel_Training = 0f;
-    public static final float DifficultyLevel_Easy = 0.8f;
-    public static final float DifficultyLevel_Normal = 1.0f;
-    public static final float DifficultyLevel_Hard = 1.2f;
-    public static final float DifficultyLevel_Crazy = 1.4f;
-    
-    private static final int NormalAppleBaseScore = 50;
-    private static final int GoldenAppleBaseScore = 100;
-    private static final int GreenAppleBaseScore = 300;
-    private static final float WeakArrowScoreAwardRate = 1.5f;
     // base gravity in milliseconds, means the time cost that apple fall from top to bottom
     private static final int BaseGravity = 5000;
     private static final int GameOverGravity = 2000;
@@ -72,7 +70,6 @@ public class GameLogic{
     private long mLastAppleCreateTime;
     private long mPassedTimeFromLastAppleCreate;
     private Stack<Integer> mNextAppleType;
-    private int mNormalAppleScore, mGoldenAppleScore, mGreenAppleScore;
     private int mGravity, mCurGravity;
     private int mAppleCreateSpeedMinValue;
     private long mLastSpecialAppleCreateTime;
@@ -80,7 +77,6 @@ public class GameLogic{
     private boolean mIsSpecialGravity;
     private boolean[] mSpecialAppCountDownShowFlag;
     private int mGameOveringTime;
-    private boolean mIsTrainingMode;
     
     public int ContinueHitCount, ContinueMissCount;
     public float CloudLeftPos, CloudTopPos1, CloudTopPos2;
@@ -94,7 +90,7 @@ public class GameLogic{
     public Bow CurBow;
     public Newton CurNewton;
     
-    public GameLogic(float difficultyLevel, Handler gameEventHandler){
+    public GameLogic(Handler gameEventHandler){
         mGameEventHandler = gameEventHandler;
         Apples = new ArrayList<Apple>();
         mRemovedApple = new ArrayList<Apple>();
@@ -102,18 +98,9 @@ public class GameLogic{
         mRemovedArrow = new ArrayList<Arrow>();
         Tips = new ArrayList<TipText>();
         mRemovedTips = new ArrayList<TipText>();
-        if (difficultyLevel==DifficultyLevel_Training){
-            mIsTrainingMode = true;
-            difficultyLevel = DifficultyLevel_Normal;
-        }else{
-            mIsTrainingMode = false;
-        }
-        mNormalAppleScore = (int)(NormalAppleBaseScore * difficultyLevel);
-        mGoldenAppleScore = (int)(GoldenAppleBaseScore * difficultyLevel);
-        mGreenAppleScore = (int)(GreenAppleBaseScore * difficultyLevel);
-        mCurGravity = mGravity = (int)(BaseGravity + BaseGravity * (1-difficultyLevel));
+        mCurGravity = mGravity = (int)(BaseGravity + BaseGravity * (1-Default_DifficultyLevel));
         mAppleCreateSpeedMinValue = (int)(AppleCreateSpeed_BaseMinValue + 
-                AppleCreateSpeed_BaseMinValue * (1-difficultyLevel));
+                AppleCreateSpeed_BaseMinValue * (1-Default_DifficultyLevel));
         mNextAppleType = new Stack<Integer>();
         mSpecialAppCountDownShowFlag = new boolean[SpecialApple_PersistTime/1000];
         CloudLeftPos = GameResource.GameStageCloudInitLeftPos;
@@ -147,9 +134,7 @@ public class GameLogic{
         mNextAppleType.push(Apple.AppleType_Normal);
         Tips.clear();
         mRemovedTips.clear();
-        if (!mIsTrainingMode){
-            CurNewton = new Newton();
-        }
+        CurNewton = new Newton();
         resetSpecialAppCountDownShowFlag();
         mGameOveringTime = 0;
         AchievementMgt.resetRoundStatData();
@@ -318,26 +303,24 @@ public class GameLogic{
                 CurNewton.Speaking(Newton.SpeakType_ContinueHit);
             }
         }
-        int addedScore = 0;
-        float scoreAwardRate = 1f;
+        int addedScore = Default_AppleScore;
         if (arrowType==Arrow.ArrowType_Weak){
-            scoreAwardRate = WeakArrowScoreAwardRate;
+            addedScore *= WeakBow_ScoreMultiple;
             AchievementMgt.StatData.WeakBowShootCount++;
+            AchievementMgt.StatData.ContinueWeakBowShootCount++;
+        }else{
+        	AchievementMgt.StatData.ContinueWeakBowShootCount = 0;
         }
         switch(appleType){
-        case Apple.AppleType_Normal:
-            addedScore = (int)(mNormalAppleScore * scoreAwardRate);
-            break;
         case Apple.AppleType_Golden:
-            addedScore = (int)(mGoldenAppleScore * scoreAwardRate);
+        	// TODO instead change weapon immediately, save weapon ammo instead
             CurBow.setBowType(Bow.BowType_Golden);
             break;
         case Apple.AppleType_Weak:
-            addedScore = (int)(mGreenAppleScore * scoreAwardRate);
+        	// TODO instead change weapon immediately, save weapon ammo instead
             CurBow.setBowType(Bow.BowType_Weak);
             break;
         case Apple.AppleType_Special:
-            addedScore = (int)(mNormalAppleScore * scoreAwardRate);
             mCurGravity = mGravity * SpecialApple_GravityRate;
             mCurAppleCreateSpeed = mAppleCreateSpeed * SpecialApple_GravityRate;
             mSpecialGravityTime = 0;
@@ -357,6 +340,7 @@ public class GameLogic{
         ContinueHitCount = 0;
         AchievementMgt.StatData.ContinueMissCount++;
         AchievementMgt.StatData.ContinueShootCount = 0;
+        AchievementMgt.StatData.ContinueWeakBowShootCount = 0;
         if (ContinueMissCount > MaxContinueMissCount){
             ContinueMissCount = 1;
         }else if (ContinueMissCount == GoldenContinueMiss){
@@ -479,7 +463,6 @@ public class GameLogic{
                 }
                 // check hit newton
                 if (CurNewton!=null && mStatus==AppleStatus_Normal && CurNewton.isHittedByApple(LeftPos, TopPos)){
-                    AchievementMgt.StatData.AppleHitNewtonTimes++;
                     mGameEventHandler.sendEmptyMessage(GameEvent_StatDataChange);
                     mGameEventHandler.sendEmptyMessage(GameEvent_AppleHitNewton);
                     mStatus = AppleStatus_AfterHitNewton;

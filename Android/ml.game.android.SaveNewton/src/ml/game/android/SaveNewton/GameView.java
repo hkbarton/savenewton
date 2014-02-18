@@ -13,7 +13,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public GameView(Context context, Handler gameEventHandler) {
         super(context);
         this.getHolder().addCallback(this);
-        mGameLogic = new GameLogic(DataAccess.Pref_Level, gameEventHandler);
+        mGameLogic = new GameLogic(gameEventHandler);
     }
     
     public void restartGame(){

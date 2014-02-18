@@ -30,7 +30,7 @@ public class DataAccess{
         if (Pref_Level==-1){ // not initialized, initialize preferences
             Pref_IsSound = true;
             Pref_IsVibration = true;
-            Pref_Level = GameLogic.DifficultyLevel_Normal;
+            Pref_Level = GameLogic.Default_DifficultyLevel;
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean(PrefKey_IsSound, Pref_IsSound);
             editor.putBoolean(PrefKey_IsVibration, Pref_IsVibration);
@@ -81,24 +81,6 @@ public class DataAccess{
         editor.putBoolean(PrefKey_IsVibration, value);
         editor.commit();
         Pref_IsVibration = value;
-    }
-    
-    public static void addLevelPref(Context context){
-        if (Pref_Level==GameLogic.DifficultyLevel_Training){
-            Pref_Level = GameLogic.DifficultyLevel_Easy;
-        }else if (Pref_Level==GameLogic.DifficultyLevel_Easy){
-            Pref_Level = GameLogic.DifficultyLevel_Normal;
-        }else if (Pref_Level==GameLogic.DifficultyLevel_Normal){
-            Pref_Level = GameLogic.DifficultyLevel_Hard;
-        }else if (Pref_Level==GameLogic.DifficultyLevel_Hard){
-            Pref_Level = GameLogic.DifficultyLevel_Crazy;
-        }else if (Pref_Level==GameLogic.DifficultyLevel_Crazy){
-            Pref_Level = GameLogic.DifficultyLevel_Training;
-        }
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putFloat(PrefKey_Level, Pref_Level);
-        editor.commit();
     }
     
     public static void saveLocalScore(Context context, String name, int score){
