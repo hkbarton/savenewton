@@ -46,13 +46,12 @@ public class GameLogic{
     private static final int SpecialApple_CoolTime = 5000;
     private long mLastSpecialAppleCreateTime;
     // Golden Apple for strong bow
-    private static final int GoldenAppleChance = 50;
+    private static final int GoldenAppleChance = 50; // means 1/50
     // Green Apple for weak but high score bow
-    private static final int GreenAppleChance = 50;
+    private static final int GreenAppleChance = 50; // means 1/50
     // Gravity Apple
     private static final int LowGravityRate = 5;
-    private static final int LowGravityAppleCreateConditionCnt = 5; // condition screen apple count of allow low gravity apple
-    private static final int LowGravityAppleChance = 3; // means 1/3
+    private static final int LowGravityAppleChance = 50; // means 1/50
     private static final int LowGravityApple_PersistTime = 6000;
     private long mLowGravityTime;
     private boolean mIsLowGravity;
@@ -253,8 +252,7 @@ public class GameLogic{
             		mNextAppleType.push(Apple.AppleType_Golden);
             	}else if (mRandomGenerator.nextInt(GreenAppleChance) > GreenAppleChance-2){
             		mNextAppleType.push(Apple.AppleType_Weak);
-            	}else if (Apples.size()>=LowGravityAppleCreateConditionCnt 
-	                    && mRandomGenerator.nextInt(LowGravityAppleChance) > LowGravityAppleChance-2){
+            	}else if (mRandomGenerator.nextInt(LowGravityAppleChance) > LowGravityAppleChance-2){
 	                mNextAppleType.push(Apple.AppleType_LowGravity);
 	            }
             }
