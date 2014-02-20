@@ -1,11 +1,9 @@
 package ml.game.android.SaveNewton;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -197,18 +195,20 @@ public class DataAccess{
     
     //-------------------------------------------- sensitive game data -----------------------------------------
     
-    private static final String GameData_UpdateDateString = "gd_update_date_string";
+    private static final String GameData_CurrentKey = "gd_current_key";
+    
     private static final String GameData_GoldenAppleLevel = "gd_golden_apple_level";
     private static final String GameData_GreenAppleLevel = "gd_green_apple_level";
     private static final String GameData_GravityAppleLevel = "gd_gravity_apple_level";
     private static final int GameData_MaxLevel = 5;
-    private static final int GameData_BasicLevelChance = 50;
+    private static final int GameData_BasicLevelChance = 50; // means 1/50
     private static final int GameData_LevelChanceStep = 10;
+    
     private static final String GameData_StrongBowCount = "gd_strong_bow_count";
     private static final String GameData_WeakBowCount = "gd_weak_bow_count";
     private static final String GameData_Gold = "gd_gold";
     
-    private static String sGDUpdateDateStr;
+    private static String sGDCurrentKey;
     
     public static int GDGoldenAppleLevel, GDGreenAppleLevel, GDGravityAppleLevel;
     public static int GDStrongBowCount, GDWeakBowCount;
@@ -217,58 +217,99 @@ public class DataAccess{
     private static HashMap<String, Float> sGameDataDefaultValue = new HashMap<String, Float>();
     
     private static void initSensiveGameData(Context context){
-    	updateGameDataUpdateDateStr(context, false);
-    	GDGoldenAppleLevel = (int)getGameData(context, GameData_GoldenAppleLevel);
-    	GDGreenAppleLevel = (int)getGameData(context, GameData_GreenAppleLevel);
-    	GDGravityAppleLevel = (int)getGameData(context, GameData_GravityAppleLevel);
-    	GDStrongBowCount = (int)getGameData(context, GameData_StrongBowCount);
-    	GDWeakBowCount = (int)getGameData(context, GameData_WeakBowCount);
-    	GDGold = (int)getGameData(context, GameData_Gold);
-    }
-    
-    private static void updateGameDataUpdateDateStr(Context context, boolean force){
-    	String newDateStr = String.valueOf((new Date()).getTime()) + String.valueOf((new Random()).nextInt(100));
-    	ContentValues data = new ContentValues();
-		data.put("value", newDateStr);
     	SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
-    	Cursor cursor = db.query("gamedata", new String[]{"value"}, "key=?", new String[]{GameData_UpdateDateString}, null, null, null);
-    	if (cursor!=null && cursor.getCount()>0 && cursor.moveToFirst()){
-    		// update
-    		sGDUpdateDateStr = cursor.getString(0);
-    		if (force){
-    			db.update("gamedata", data, "key=?", new String[]{GameData_UpdateDateString});
-    			sGDUpdateDateStr = newDateStr;
-    		}
-    	}else{
-    		data.put("key", GameData_UpdateDateString);
-    		db.insert("gamedata", null, data);
-    		sGDUpdateDateStr = newDateStr;
-    	}
-    	cursor.close();
+    	updateGameDataUpdateDateStr(context, db, false);
+    	GDGoldenAppleLevel = (int)getGameData(context, db, GameData_GoldenAppleLevel);
+    	GDGreenAppleLevel = (int)getGameData(context, db, GameData_GreenAppleLevel);
+    	GDGravityAppleLevel = (int)getGameData(context, db, GameData_GravityAppleLevel);
+    	GDStrongBowCount = (int)getGameData(context, db, GameData_StrongBowCount);
+    	GDWeakBowCount = (int)getGameData(context, db, GameData_WeakBowCount);
+    	GDGold = (int)getGameData(context, db, GameData_Gold);
     	db.close();
     }
     
-    private static float getGameData(Context context, String key){
-    	SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
+    private static void updateGameDataUpdateDateStr(Context context, SQLiteDatabase db, boolean force){
+    	String newKey = SecueUtil.getRandomEncryptKey();
+    	ContentValues data = new ContentValues();
+		data.put("value", newKey);
+    	Cursor cursor = db.query("gamedata", new String[]{"value"}, "key=?", new String[]{GameData_CurrentKey}, null, null, null);
+    	if (cursor!=null && cursor.getCount()>0 && cursor.moveToFirst()){
+    		// update
+    		sGDCurrentKey = cursor.getString(0);
+    		if (force){
+    			db.update("gamedata", data, "key=?", new String[]{GameData_CurrentKey});
+    			sGDCurrentKey = newKey;
+    		}
+    	}else{
+    		data.put("key", GameData_CurrentKey);
+    		db.insert("gamedata", null, data);
+    		sGDCurrentKey = newKey;
+    	}
+    	cursor.close();
+    }
+    
+    private static String getValueStoreStr(String key, float value){
+    	return key + "`" + String.valueOf(value);
+    }
+    
+    private static float getGameData(Context context, SQLiteDatabase db, String key){
     	Cursor cursor = db.query("gamedata", new String[]{"value"}, "key=?", new String[]{key}, null, null, null);
     	boolean foundValue = false;
     	float result = sGameDataDefaultValue.get(key);
     	if (cursor!=null && cursor.getCount()>0 && cursor.moveToFirst()){
     		String oriValue = cursor.getString(0);
-    		// TODO Decryption data
+    		String strValue = SecueUtil.decryptData(oriValue, sGDCurrentKey);
+    		if (strValue!=null){
+    			String[] valueData = strValue.split("`");
+    			if (valueData[0].equals(key)){
+	    			try{
+	    				result = Float.parseFloat(valueData[1]);
+	    				foundValue = true;
+	    			}catch(Exception ex){
+	    				result = sGameDataDefaultValue.get(key);
+	    			}
+    			}
+    		}
     	}
     	if (!foundValue){
-    		// TODO insert default value
+    		ContentValues data = new ContentValues();
+    		String encrptValue = SecueUtil.encryptData(getValueStoreStr(key, result), sGDCurrentKey);
+    		data.put("key", key);
+    		data.put("value", encrptValue);
+    		db.insert("gamedata", null, data);
     	}
     	cursor.close();
-    	db.close();
     	return result;
     }
     
     public static void saveAllGameData(Context context){
-    	updateGameDataUpdateDateStr(context, true);
     	SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
-    	// TODO
+    	updateGameDataUpdateDateStr(context, db, true);
+    	ContentValues data = new ContentValues();
+    	data.put("key", GameData_GoldenAppleLevel);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_GoldenAppleLevel, GDGoldenAppleLevel), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_GoldenAppleLevel});
+		data.clear();
+		data.put("key", GameData_GreenAppleLevel);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_GreenAppleLevel, GDGreenAppleLevel), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_GreenAppleLevel});
+		data.clear();
+		data.put("key", GameData_GravityAppleLevel);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_GravityAppleLevel, GDGravityAppleLevel), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_GravityAppleLevel});
+		data.clear();
+		data.put("key", GameData_StrongBowCount);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_StrongBowCount, GDStrongBowCount), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_StrongBowCount});
+		data.clear();
+		data.put("key", GameData_WeakBowCount);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_WeakBowCount, GDWeakBowCount), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_WeakBowCount});
+		data.clear();
+		data.put("key", GameData_Gold);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_Gold, GDGold), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_Gold});
+		data.clear();
     	db.close();
     }
     

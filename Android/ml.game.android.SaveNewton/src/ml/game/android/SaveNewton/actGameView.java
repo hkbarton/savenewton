@@ -84,6 +84,7 @@ public class actGameView extends BaseGameActivity{
                 break;
             case GameLogic.GameEvent_GameOver:
                 showMenu();
+                DataAccess.saveAllGameData(actGameView.this);
                 break;
             case GameLogic.GameEvent_StatDataChange:
                 List<AchievementMgt.LocalAchievement> unlockedAchievements = 
@@ -127,6 +128,7 @@ public class actGameView extends BaseGameActivity{
     public void onStop(){
         super.onStop();
         AudioResource.stopBGM(AudioResource.BGMID_Play);
+        DataAccess.saveAllGameData(this);
     }
     
     private void initAnimation(){

@@ -45,13 +45,9 @@ public class GameLogic{
     // Special Apple Setting
     private static final int SpecialApple_CoolTime = 5000;
     private long mLastSpecialAppleCreateTime;
-    // Golden Apple for strong bow
-    private static final int GoldenAppleChance = 50; // means 1/50
-    // Green Apple for weak but high score bow
-    private static final int GreenAppleChance = 50; // means 1/50
+    private int mGoldenAppleChance, mWeakAppleChance, mGravityAppleChance;
     // Gravity Apple
     private static final int LowGravityRate = 5;
-    private static final int LowGravityAppleChance = 50; // means 1/50
     private static final int LowGravityApple_PersistTime = 6000;
     private long mLowGravityTime;
     private boolean mIsLowGravity;
@@ -122,6 +118,9 @@ public class GameLogic{
         mLastSpecialAppleCreateTime = 0;
         mLowGravityTime = 0;
         mIsLowGravity = false;
+        mGoldenAppleChance = DataAccess.getChanceDataByLevel(DataAccess.GDGoldenAppleLevel);
+        mWeakAppleChance = DataAccess.getChanceDataByLevel(DataAccess.GDGreenAppleLevel);
+        mGravityAppleChance = DataAccess.getChanceDataByLevel(DataAccess.GDGravityAppleLevel);
         Apples.clear();
         mRemovedApple.clear();
         Arrows.clear();
@@ -248,11 +247,11 @@ public class GameLogic{
             // check if need create special apple
             if (curFrameTime - mLastSpecialAppleCreateTime > SpecialApple_CoolTime){
             	// generate low gravity apple
-            	if (mRandomGenerator.nextInt(GoldenAppleChance) > GoldenAppleChance-2){
+            	if (mRandomGenerator.nextInt(mGoldenAppleChance) > mGoldenAppleChance-2){
             		mNextAppleType.push(Apple.AppleType_Golden);
-            	}else if (mRandomGenerator.nextInt(GreenAppleChance) > GreenAppleChance-2){
+            	}else if (mRandomGenerator.nextInt(mWeakAppleChance) > mWeakAppleChance-2){
             		mNextAppleType.push(Apple.AppleType_Weak);
-            	}else if (mRandomGenerator.nextInt(LowGravityAppleChance) > LowGravityAppleChance-2){
+            	}else if (mRandomGenerator.nextInt(mGravityAppleChance) > mGravityAppleChance-2){
 	                mNextAppleType.push(Apple.AppleType_LowGravity);
 	            }
             }
