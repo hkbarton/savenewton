@@ -5,6 +5,8 @@ import ml.game.android.SaveNewton.GameLogic.Arrow;
 import ml.game.android.SaveNewton.GameLogic.Bow;
 import ml.game.android.SaveNewton.GameLogic.Newton;
 import ml.game.android.SaveNewton.GameLogic.TipText;
+import ml.game.android.SaveNewton.GameLogic.ToolButton;
+import ml.game.android.SaveNewton.GameLogic.WeaponSelectButton;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrixColorFilter;
@@ -161,6 +163,14 @@ public class GameMainThread extends Thread{
             // draw front stage
             canvas.drawBitmap(GameResource.GameStage_Front, 
                     GameResource.GameStageFrontLeftPos, GameResource.GameStageFrontTopPos, null);
+            // draw tool buttons
+            // TODO
+            for(int i=mGameLogic.ToolButtons.length-1;i>=0;i--){
+            	ToolButton toolButton = mGameLogic.ToolButtons[i];
+            	if (toolButton instanceof WeaponSelectButton){
+            		
+            	}
+            }
             // draw end frame special
             if (isEndFrame){
                 if (mGameLogic.getGameStatus()==GameLogic.GameStatus_Pause){

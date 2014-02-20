@@ -85,6 +85,7 @@ public class GameLogic{
     public List<TipText> Tips;
     public Bow CurBow;
     public Newton CurNewton;
+    public ToolButton[] ToolButtons;
     
     public GameLogic(Handler gameEventHandler){
         mGameEventHandler = gameEventHandler;
@@ -132,6 +133,9 @@ public class GameLogic{
         Tips.clear();
         mRemovedTips.clear();
         CurNewton = new Newton();
+        ToolButtons = new ToolButton[2];
+        ToolButtons[0] = new WeaponSelectButton(WeaponSelectButton.WeaponButtonType_StrongBow);
+        ToolButtons[1] = new WeaponSelectButton(WeaponSelectButton.WeaponButtonType_WeakBow);
         resetLowGravityAppCountDownShowFlag();
         mGameOveringTime = 0;
         AchievementMgt.resetRoundStatData();
@@ -299,11 +303,13 @@ public class GameLogic{
         case Apple.AppleType_Golden:
         	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
         	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
+        	DataAccess.GDStrongBowCount += DataAccess.GameData_StrongBowCountInOneApple;
             CurBow.setBowType(Bow.BowType_Golden);
             break;
         case Apple.AppleType_Weak:
         	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
         	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
+        	DataAccess.GDWeakBowCount += DataAccess.GameData_WeakBowCountInOneApple;
             CurBow.setBowType(Bow.BowType_Weak);
             break;
         case Apple.AppleType_LowGravity:
@@ -587,11 +593,11 @@ public class GameLogic{
         public void setBowType(int type){
             switch(type){
             case BowType_Golden:
-                GoldenBowCount += GoldenBowCountIncrease;
+                GoldenBowCount += GoldenBowCountIncrease; // TODO need change
                 WeakBowCount = 0;
                 break;
             case BowType_Weak:
-                WeakBowCount += WeakBowCountIncrease;
+                WeakBowCount += WeakBowCountIncrease; // TODO need change
                 GoldenBowCount = 0;
                 break;
             }
@@ -1278,5 +1284,24 @@ public class GameLogic{
                 // NewtonStatus_Over do nothing
             }
         }
+    }
+    
+    public class ToolButton{
+    	
+    }
+    
+    public class WeaponSelectButton extends ToolButton{
+    	public static final int WeaponButtonType_StrongBow = 0;
+    	public static final int WeaponButtonType_WeakBow = 1;
+    	
+    	private int mType;
+    	
+    	public WeaponSelectButton(int weaponType){
+    		mType = weaponType;
+    	}
+    	
+    	public void click(float xPos, float yPos){
+    		
+    	}
     }
 }
