@@ -44,6 +44,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             switch (action){
             case MotionEvent.ACTION_DOWN:
                 mGameLogic.CurBow.pullBow(event.getX(), event.getY());
+                mGameLogic.clickToolButton(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
                 mGameLogic.CurBow.moveBow(event.getX(), event.getY());

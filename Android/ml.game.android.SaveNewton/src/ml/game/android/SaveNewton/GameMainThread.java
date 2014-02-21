@@ -147,7 +147,7 @@ public class GameMainThread extends Thread{
                 canvas.drawBitmap(GameResource.BowIcon[GameResource.GoldenBowIcon_FrameIndex], 
                         GameResource.BowIconLeftPos, GameResource.BowIconTopPos, null);
                 drawNumber(canvas, GameResource.BowIconCountRightPos, 
-                        GameResource.BowIconCountTopPos, bow.GoldenBowCount);
+                        GameResource.BowIconCountTopPos, DataAccess.GDStrongBowCount);
                 canvas.drawBitmap(GameResource.GoldenBow[bow.CurrentShowFrame], 
                         GameResource.BowLeftPos, bow.TopPos, null);
                 break;
@@ -155,7 +155,7 @@ public class GameMainThread extends Thread{
                 canvas.drawBitmap(GameResource.BowIcon[GameResource.WeakBowIcon_FrameIndex], 
                         GameResource.BowIconLeftPos, GameResource.BowIconTopPos, null);
                 drawNumber(canvas, GameResource.BowIconCountRightPos, 
-                        GameResource.BowIconCountTopPos, bow.WeakBowCount);
+                        GameResource.BowIconCountTopPos, DataAccess.GDWeakBowCount);
                 canvas.drawBitmap(GameResource.NormalBow[bow.CurrentShowFrame], 
                         GameResource.BowLeftPos, bow.TopPos, null);
                 break;
@@ -164,11 +164,20 @@ public class GameMainThread extends Thread{
             canvas.drawBitmap(GameResource.GameStage_Front, 
                     GameResource.GameStageFrontLeftPos, GameResource.GameStageFrontTopPos, null);
             // draw tool buttons
-            // TODO
+            float buttonLeftPos = GameResource.ToolButtonLastLeftPos;
             for(int i=mGameLogic.ToolButtons.length-1;i>=0;i--){
             	ToolButton toolButton = mGameLogic.ToolButtons[i];
+            	toolButton.setPosAndSize(buttonLeftPos, GameResource.ToolButtonTopPos, GameResource.ToolButtonWidth);
+            	// draw button background
+            	if (toolButton.isSelected){
+            		canvas.drawBitmap(GameResource.SelectedToolButtonBG, buttonLeftPos, GameResource.ToolButtonTopPos, null);
+            	}else{
+            		canvas.drawBitmap(GameResource.ToolButtonBG, buttonLeftPos, GameResource.ToolButtonTopPos, null);
+            	}
+            	buttonLeftPos -= GameResource.ToolButtonLeftMargin + GameResource.ToolButtonWidth;
+            	// draw button icon and count
             	if (toolButton instanceof WeaponSelectButton){
-            		
+            		// TODO
             	}
             }
             // draw end frame special

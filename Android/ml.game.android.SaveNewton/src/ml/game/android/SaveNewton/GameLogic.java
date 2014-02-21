@@ -303,14 +303,12 @@ public class GameLogic{
         case Apple.AppleType_Golden:
         	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
         	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
-        	DataAccess.GDStrongBowCount += DataAccess.GameData_StrongBowCountInOneApple;
-            CurBow.setBowType(Bow.BowType_Golden);
+        	DataAccess.increaseStrongBowCountFromApple();
             break;
         case Apple.AppleType_Weak:
         	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
         	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
-        	DataAccess.GDWeakBowCount += DataAccess.GameData_WeakBowCountInOneApple;
-            CurBow.setBowType(Bow.BowType_Weak);
+        	DataAccess.increaseWeakBowCountFromApple();
             break;
         case Apple.AppleType_LowGravity:
             mCurGravity = mGravity * LowGravityRate;
@@ -515,9 +513,6 @@ public class GameLogic{
         public static final int BowType_Golden = 1;
         public static final int BowType_Weak = 2;
         
-        private static final int GoldenBowCountIncrease = 5;
-        private static final int WeakBowCountIncrease = 5;
-        
         private static final int HandleStatus_Ready = 0;
         private static final int HandleStatus_Pull = 1;
         private static final int HandleStatus_Release = 2;
@@ -529,8 +524,6 @@ public class GameLogic{
         public int Type;
         public float TopPos;
         public int CurrentShowFrame;
-        public int GoldenBowCount;
-        public int WeakBowCount;
         
         private int mHandleStatus;
         private boolean mIsTracking;
@@ -540,8 +533,6 @@ public class GameLogic{
         
         public Bow(){
             Type = BowType_Normal;
-            GoldenBowCount = 0;
-            WeakBowCount = 0;
             TopPos = GameResource.BowHandleTopPosLimit - GameResource.BowHeight/2;
             CurrentShowFrame = 1;
             mHandleStatus = HandleStatus_Ready;
@@ -591,21 +582,7 @@ public class GameLogic{
         }
         
         public void setBowType(int type){
-            switch(type){
-            case BowType_Golden:
-                GoldenBowCount += GoldenBowCountIncrease; // TODO need change
-                WeakBowCount = 0;
-                break;
-            case BowType_Weak:
-                WeakBowCount += WeakBowCountIncrease; // TODO need change
-                GoldenBowCount = 0;
-                break;
-            }
-            if (GoldenBowCount > 0){
-                Type = BowType_Golden;
-            }else if (WeakBowCount > 0){
-                Type = BowType_Weak;
-            }
+            Type = type;
         }
         
         private void releaseArrow(){
@@ -613,18 +590,16 @@ public class GameLogic{
             switch(Type){
             case BowType_Golden:
                 arrowType = Arrow.ArrowType_Golden;
-                GoldenBowCount--;
-                if (GoldenBowCount<=0){
-                    GoldenBowCount = 0;
-                    Type = BowType_Normal;
+                DataAccess.GDStrongBowCount--;
+                if (DataAccess.GDStrongBowCount==0){
+                	resetToNormalWeapon();
                 }
                 break;
             case BowType_Weak:
                 arrowType = Arrow.ArrowType_Weak;
-                WeakBowCount--;
-                if (WeakBowCount<=0){
-                    WeakBowCount = 0;
-                    Type = BowType_Normal;
+                DataAccess.GDWeakBowCount--;
+                if (DataAccess.GDWeakBowCount==0){
+                	resetToNormalWeapon();
                 }
                 break;
             }
@@ -1287,21 +1262,90 @@ public class GameLogic{
     }
     
     public class ToolButton{
+    	public boolean isSelected = false;
+    	public float xPos,yPos, size;
     	
+    	// call by draw thread
+    	public void setPosAndSize(float x, float y, float s){
+    		xPos = x;
+    		yPos = y;
+    		size = s;
+    	}
+    	
+    	public void select(){
+    		isSelected = true;
+    	}
+    	
+    	public void unSelect(){
+    		isSelected = false;
+    	}
+    	
+    	public boolean click(float x, float y){
+    		if (x>=xPos && x<=xPos+size && y>=yPos && y<=yPos+size){
+    			isSelected = !isSelected;
+    			return true;
+    		}
+    		return false;
+    	}
     }
     
     public class WeaponSelectButton extends ToolButton{
     	public static final int WeaponButtonType_StrongBow = 0;
     	public static final int WeaponButtonType_WeakBow = 1;
     	
-    	private int mType;
+    	public int WeaponType;
     	
     	public WeaponSelectButton(int weaponType){
-    		mType = weaponType;
+    		WeaponType = weaponType;
     	}
     	
-    	public void click(float xPos, float yPos){
-    		
+    	@Override public boolean click(float xPos, float yPos){
+    		boolean allowClick = false;
+    		if ((WeaponType==WeaponButtonType_StrongBow && DataAccess.GDStrongBowCount > 0)
+    				|| (WeaponType==WeaponButtonType_WeakBow && DataAccess.GDWeakBowCount > 0)){
+    			allowClick = true;
+    		}
+    		boolean result = false;
+    		if (allowClick){
+	    		result = super.click(xPos, yPos);
+	    		if (result){
+	    			if (isSelected){
+		    			for (int i=0;i<ToolButtons.length;i++){
+		    				if (ToolButtons[i] instanceof WeaponSelectButton
+		    						&& ToolButtons[i]!=this){
+		    					ToolButtons[i].unSelect();
+		    				}
+		    			}
+		    			if (WeaponType==WeaponButtonType_StrongBow){
+		    				CurBow.setBowType(Bow.BowType_Golden);
+		    			}else if (WeaponType==WeaponButtonType_WeakBow){
+		    				CurBow.setBowType(Bow.BowType_Weak);
+		    			}
+	    			}else{
+	    				CurBow.setBowType(Bow.BowType_Normal);
+	    			}
+	    		}
+    		}
+    		return result;
+    	}
+    }
+    
+    private void resetToNormalWeapon(){
+    	for (int i=0;i<ToolButtons.length;i++){
+			if (ToolButtons[i] instanceof WeaponSelectButton){
+				ToolButtons[i].unSelect();
+			}
+		}
+    	CurBow.setBowType(Bow.BowType_Normal);
+    }
+    
+    public void clickToolButton(float xPos, float yPos){
+    	if (ToolButtons!=null && ToolButtons.length>0){
+    		for (int i=0;i<ToolButtons.length;i++){
+    			if (ToolButtons[i].click(xPos, yPos)){
+    				break;
+    			}
+    		}
     	}
     }
 }

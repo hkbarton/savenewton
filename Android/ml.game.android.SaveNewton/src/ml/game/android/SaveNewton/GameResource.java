@@ -74,6 +74,8 @@ public final class GameResource{
     private static final float Newton_ArrowShotCheck_BottomPosRate = 0.9f;
     private static final float FallNewton_BodyWidthRate = 0.78f;
     private static final float Newton_ArrowShot_LeftPosRate = 0.7f;
+    // Tool Button Design Size and Position
+    private static final int ToolButtonOriWidthHeight = 40;
     
     public static int GameStageWidth; // in Pixel
     public static int GameStageHeight; // in Pixel
@@ -84,6 +86,8 @@ public final class GameResource{
     public static float GameStageBottom;
     public static float GameStageCloudTopPos1, GameStageCloudTopPos2, GameStageCloudInitLeftPos;
     public static int GameStageCloudWidth, GameStageCloudDis;
+    // Tool Button calculate Size and Position
+    public static float ToolButtonWidth, ToolButtonTopPos, ToolButtonLastLeftPos, ToolButtonLeftMargin;
     
     public static Bitmap GameStage_Back0, GameStage_Back1, GameStage_Front, GameStage_Cloud;
     public static Bitmap[] NormalApple, SpecialApple, GoldenApple, GreenApple;
@@ -97,6 +101,7 @@ public final class GameResource{
     public static Bitmap PauseGameTip;
     public static Bitmap[] Newton;
     public static Bitmap[] NewtonSpeakText;
+    public static Bitmap ToolButtonBG, SelectedToolButtonBG;
     
     public static int AppleInitTopPos;
     public static int[] AppleLeftPos;
@@ -241,6 +246,7 @@ public final class GameResource{
         initText(res, hScaleRate);
         initNewton(res, hScaleRate);
         initNewtonSpeakText(res, hScaleRate);
+        initToolButton(res, wScaleRate);
         sNoScaleOp = null;
     }
     
@@ -647,6 +653,15 @@ public final class GameResource{
                 width, height, true);
     }
     
+    private static void initToolButton(Resources res, float wScaleRate){
+    	ToolButtonBG = BitmapFactory.decodeResource(res, R.drawable.tool_button_bg, sNoScaleOp);
+    	ToolButtonBG = Bitmap.createScaledBitmap(ToolButtonBG, (int)(ToolButtonOriWidthHeight*wScaleRate), 
+    			(int)(ToolButtonOriWidthHeight*wScaleRate), true);
+    	SelectedToolButtonBG = BitmapFactory.decodeResource(res, R.drawable.tool_button_selected_bg, sNoScaleOp);
+    	SelectedToolButtonBG = Bitmap.createScaledBitmap(SelectedToolButtonBG, (int)(ToolButtonOriWidthHeight*wScaleRate), 
+    			(int)(ToolButtonOriWidthHeight*wScaleRate), true);
+    }
+    
     private static void initGameConstNumbers(){
         GameStageFrontLeftPos = GameStageWidth - GameStage_Front.getWidth();
         GameStageFrontTopPos = GameStageHeight - GameStage_Front.getHeight();
@@ -721,5 +736,10 @@ public final class GameResource{
         NewtonArrowShotCheckBottomPos = Newton[0].getHeight() * Newton_ArrowShotCheck_BottomPosRate;
         FallNewtonBodyWidth = (int)(FallNewtonWidth * FallNewton_BodyWidthRate);
         NewtonArrowShotLeftPos = NormalNewtonWidth * Newton_ArrowShot_LeftPosRate;
+        // Tool Button
+        ToolButtonWidth = ToolButtonBG.getWidth();
+        ToolButtonTopPos = GameStageHeight - (ToolButtonWidth/2 + ToolButtonWidth);
+        ToolButtonLastLeftPos = GameStageWidth - (ToolButtonWidth * 2 + ToolButtonWidth/2);
+        ToolButtonLeftMargin = ToolButtonWidth/2;
     }
 }

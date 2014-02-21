@@ -200,20 +200,20 @@ public class DataAccess{
     private static final String GameData_GoldenAppleLevel = "gd_golden_apple_level";
     private static final String GameData_GreenAppleLevel = "gd_green_apple_level";
     private static final String GameData_GravityAppleLevel = "gd_gravity_apple_level";
-    private static final int GameData_MaxLevel = 5;
-    private static final int GameData_BasicLevelChance = 50; // means 1/50
-    private static final int GameData_LevelChanceStep = 10;
     private static final String GameData_StrongBowCount = "gd_strong_bow_count";
     private static final String GameData_WeakBowCount = "gd_weak_bow_count";
     private static final String GameData_Gold = "gd_gold";
     
+    private static final int GameData_MaxLevel = 5;
+    private static final int GameData_BasicLevelChance = 50; // means 1/50
+    private static final int GameData_LevelChanceStep = 10;
+    private static final int GameData_MaxWeaponCount = 999;
+    private static final int GameData_WeaponCountInOneApple = 2;
+    
     private static String sGDCurrentKey;
     
-    public static final int GameData_StrongBowCountInOneApple = 2;
-    public static final int GameData_WeakBowCountInOneApple = 2;
-    
     public static int GDGoldenAppleLevel, GDGreenAppleLevel, GDGravityAppleLevel;
-    public static int GDStrongBowCount, GDWeakBowCount;
+    public static int GDStrongBowCount, GDWeakBowCount; // weapons
     public static int GDGold;
     
     private static HashMap<String, Float> sGameDataDefaultValue = new HashMap<String, Float>();
@@ -317,6 +317,18 @@ public class DataAccess{
     
     public static int getChanceDataByLevel(int level){
     	return GameData_BasicLevelChance - GameData_LevelChanceStep * (level-1);
+    }
+    
+    public static void increaseStrongBowCountFromApple(){
+    	if (GDStrongBowCount < GameData_MaxWeaponCount){
+    		GDStrongBowCount += GameData_WeaponCountInOneApple;
+    	}
+    }
+    
+    public static void increaseWeakBowCountFromApple(){
+    	if (GDWeakBowCount < GameData_MaxWeaponCount){
+    		GDWeakBowCount += GameData_WeaponCountInOneApple;
+    	}
     }
     
     // init sensitive game data
