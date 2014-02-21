@@ -55,6 +55,9 @@ public class GameMainThread extends Thread{
     
     private void drawGameFrame(Paint transPaint, Matrix drawMatrix, boolean isEndFrame){
         Canvas canvas = null;
+        if (GameResource.GameStage_Back0==null){
+        	return;
+        }
         try{
             canvas = mGameViewHolder.lockCanvas(null);
             // draw background
@@ -174,12 +177,25 @@ public class GameMainThread extends Thread{
             	}else{
             		canvas.drawBitmap(GameResource.ToolButtonBG, buttonLeftPos, GameResource.ToolButtonTopPos, null);
             	}
-            	buttonLeftPos -= GameResource.ToolButtonLeftMargin + GameResource.ToolButtonWidth;
             	// draw button icon and count
             	if (toolButton instanceof WeaponSelectButton){
-            		// TODO
+            		String count = "0";
+            		WeaponSelectButton wbutton = (WeaponSelectButton)toolButton;
+            		if (wbutton.WeaponType==WeaponSelectButton.WeaponButtonType_StrongBow){
+            			canvas.drawBitmap(GameResource.WeaponButtonStrongBow, buttonLeftPos, GameResource.ToolButtonTopPos, null);
+            			count = String.valueOf(DataAccess.GDStrongBowCount);
+            		}else if (wbutton.WeaponType==WeaponSelectButton.WeaponButtonType_WeakBow){
+            			canvas.drawBitmap(GameResource.WeaponButtonWeakBow, buttonLeftPos, GameResource.ToolButtonTopPos, null);
+            			count = String.valueOf(DataAccess.GDWeakBowCount);
+            		}
+            		float textWidth = GameResource.WeaponCountTextPaint.measureText(count);
+            		canvas.drawText(count, buttonLeftPos + (GameResource.ToolButtonHalfWidth-textWidth/2), 
+            				GameResource.ToolButtonTopPos + GameResource.ToolButtonHalfWidth, 
+            				GameResource.WeaponCountTextPaint);
             	}
+            	buttonLeftPos -= GameResource.ToolButtonLeftMargin + GameResource.ToolButtonWidth;
             }
+            GameResource.ToolButtonFirstLeftPos = buttonLeftPos;
             // draw end frame special
             if (isEndFrame){
                 if (mGameLogic.getGameStatus()==GameLogic.GameStatus_Pause){

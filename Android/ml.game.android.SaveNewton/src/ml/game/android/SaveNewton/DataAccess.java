@@ -336,8 +336,8 @@ public class DataAccess{
     	sGameDataDefaultValue.put(GameData_GoldenAppleLevel, 1f);
     	sGameDataDefaultValue.put(GameData_GreenAppleLevel, 1f);
     	sGameDataDefaultValue.put(GameData_GravityAppleLevel, 1f);
-    	sGameDataDefaultValue.put(GameData_StrongBowCount, 0f);
-    	sGameDataDefaultValue.put(GameData_WeakBowCount, 0f);
+    	sGameDataDefaultValue.put(GameData_StrongBowCount, 100f); // TODO for test count
+    	sGameDataDefaultValue.put(GameData_WeakBowCount, 100f);
     	sGameDataDefaultValue.put(GameData_Gold, 0f);
     }
 }

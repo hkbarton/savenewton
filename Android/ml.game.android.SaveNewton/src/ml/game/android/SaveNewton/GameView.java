@@ -37,7 +37,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         int action = event.getAction();
         // Deal Game Pause Signal
         if (action==MotionEvent.ACTION_DOWN){
-            mGameLogic.dealGamePauseSignalUserInput(event.getX());
+            mGameLogic.dealGamePauseSignalUserInput(event.getX(), event.getY());
         }
         // Bow Control
         if (mGameLogic.getGameStatus()==GameLogic.GameStatus_Running){

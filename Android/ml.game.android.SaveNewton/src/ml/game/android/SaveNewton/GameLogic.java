@@ -165,9 +165,10 @@ public class GameLogic{
         return mGameStatus;
     }
     
-    public void dealGamePauseSignalUserInput(float x){
+    public void dealGamePauseSignalUserInput(float x, float y){
         if (mGameStatus!=GameStatus_GameOver
-                && x>GameResource.BowHandleRightPosLimit && x<=GameResource.GameStageWidth){
+                && x>GameResource.BowHandleRightPosLimit && x<=GameResource.GameStageWidth
+                && !(y>=GameResource.ToolButtonTopPos && x>=GameResource.ToolButtonFirstLeftPos)){
             if (mGameStatus==GameStatus_Pause){
                 resumeGame(System.currentTimeMillis());
             }else{

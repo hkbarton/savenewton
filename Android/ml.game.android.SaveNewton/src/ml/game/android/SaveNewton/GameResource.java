@@ -3,7 +3,10 @@ package ml.game.android.SaveNewton;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 
 public final class GameResource{
     public static final float Disappear_Transparent_Disvalue = 0.2f;
@@ -76,6 +79,7 @@ public final class GameResource{
     private static final float Newton_ArrowShot_LeftPosRate = 0.7f;
     // Tool Button Design Size and Position
     private static final int ToolButtonOriWidthHeight = 40;
+    private static final int ToolButtonTextSize = 20;
     
     public static int GameStageWidth; // in Pixel
     public static int GameStageHeight; // in Pixel
@@ -87,7 +91,8 @@ public final class GameResource{
     public static float GameStageCloudTopPos1, GameStageCloudTopPos2, GameStageCloudInitLeftPos;
     public static int GameStageCloudWidth, GameStageCloudDis;
     // Tool Button calculate Size and Position
-    public static float ToolButtonWidth, ToolButtonTopPos, ToolButtonLastLeftPos, ToolButtonLeftMargin;
+    public static float ToolButtonWidth, ToolButtonTopPos, ToolButtonLeftMargin, ToolButtonHalfWidth;
+    public static float ToolButtonLastLeftPos, ToolButtonFirstLeftPos;
     
     public static Bitmap GameStage_Back0, GameStage_Back1, GameStage_Front, GameStage_Cloud;
     public static Bitmap[] NormalApple, SpecialApple, GoldenApple, GreenApple;
@@ -102,6 +107,8 @@ public final class GameResource{
     public static Bitmap[] Newton;
     public static Bitmap[] NewtonSpeakText;
     public static Bitmap ToolButtonBG, SelectedToolButtonBG;
+    public static Bitmap WeaponButtonStrongBow, WeaponButtonWeakBow;
+    public static Paint WeaponCountTextPaint;
     
     public static int AppleInitTopPos;
     public static int[] AppleLeftPos;
@@ -660,6 +667,16 @@ public final class GameResource{
     	SelectedToolButtonBG = BitmapFactory.decodeResource(res, R.drawable.tool_button_selected_bg, sNoScaleOp);
     	SelectedToolButtonBG = Bitmap.createScaledBitmap(SelectedToolButtonBG, (int)(ToolButtonOriWidthHeight*wScaleRate), 
     			(int)(ToolButtonOriWidthHeight*wScaleRate), true);
+    	WeaponButtonStrongBow = BitmapFactory.decodeResource(res, R.drawable.ic_weapon_strongbow, sNoScaleOp);
+    	WeaponButtonStrongBow = Bitmap.createScaledBitmap(WeaponButtonStrongBow, (int)(ToolButtonOriWidthHeight*wScaleRate), 
+    			(int)(ToolButtonOriWidthHeight*wScaleRate), true);
+    	WeaponButtonWeakBow = BitmapFactory.decodeResource(res, R.drawable.ic_weapon_weakbow, sNoScaleOp);
+    	WeaponButtonWeakBow = Bitmap.createScaledBitmap(WeaponButtonWeakBow, (int)(ToolButtonOriWidthHeight*wScaleRate), 
+    			(int)(ToolButtonOriWidthHeight*wScaleRate), true);
+    	WeaponCountTextPaint = new Paint();
+    	WeaponCountTextPaint.setColor(Color.YELLOW);
+    	WeaponCountTextPaint.setStyle(Style.FILL);
+    	WeaponCountTextPaint.setTextSize(ToolButtonTextSize * wScaleRate);
     }
     
     private static void initGameConstNumbers(){
@@ -738,8 +755,10 @@ public final class GameResource{
         NewtonArrowShotLeftPos = NormalNewtonWidth * Newton_ArrowShot_LeftPosRate;
         // Tool Button
         ToolButtonWidth = ToolButtonBG.getWidth();
+        ToolButtonHalfWidth = ToolButtonWidth/2;
         ToolButtonTopPos = GameStageHeight - (ToolButtonWidth/2 + ToolButtonWidth);
         ToolButtonLastLeftPos = GameStageWidth - (ToolButtonWidth * 2 + ToolButtonWidth/2);
+        ToolButtonFirstLeftPos = ToolButtonLastLeftPos;
         ToolButtonLeftMargin = ToolButtonWidth/2;
     }
 }
