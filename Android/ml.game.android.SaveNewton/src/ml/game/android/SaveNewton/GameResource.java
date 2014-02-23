@@ -78,7 +78,7 @@ public final class GameResource{
     private static final float FallNewton_BodyWidthRate = 0.78f;
     private static final float Newton_ArrowShot_LeftPosRate = 0.7f;
     // Tool Button Design Size and Position
-    private static final int ToolButtonOriWidthHeight = 40;
+    private static final int ToolButtonOriWidthHeight = 50;
     private static final int ToolButtonTextSize = 20;
     
     public static int GameStageWidth; // in Pixel
@@ -109,6 +109,7 @@ public final class GameResource{
     public static Bitmap ToolButtonBG, SelectedToolButtonBG;
     public static Bitmap WeaponButtonStrongBow, WeaponButtonWeakBow;
     public static Paint WeaponCountTextPaint;
+    public static Bitmap TipIconWeapon_StrongBow, TipIconWeapon_WeakBow;
     
     public static int AppleInitTopPos;
     public static int[] AppleLeftPos;
@@ -529,6 +530,15 @@ public final class GameResource{
         PauseGameTip = Bitmap.createScaledBitmap(PauseGameTip, 
                 (int)(PauseGameTip.getWidth()*hScaleRate), 
                 (int)(PauseGameTip.getHeight()*hScaleRate), true);
+        // Tip Icon for Weapin Icon
+        TipIconWeapon_StrongBow = BitmapFactory.decodeResource(res, R.drawable.tipicon_weapon_strongbow, sNoScaleOp);
+        TipIconWeapon_StrongBow = Bitmap.createScaledBitmap(TipIconWeapon_StrongBow, 
+                (int)(TipIconWeapon_StrongBow.getWidth()*hScaleRate), 
+                (int)(TipIconWeapon_StrongBow.getHeight()*hScaleRate), true);
+        TipIconWeapon_WeakBow = BitmapFactory.decodeResource(res, R.drawable.tipicon_weapon_weakbow, sNoScaleOp);
+        TipIconWeapon_WeakBow = Bitmap.createScaledBitmap(TipIconWeapon_WeakBow, 
+                (int)(TipIconWeapon_WeakBow.getWidth()*hScaleRate), 
+                (int)(TipIconWeapon_WeakBow.getHeight()*hScaleRate), true);
     }
     
     private static void initNewton(Resources res, float hScaleRate){

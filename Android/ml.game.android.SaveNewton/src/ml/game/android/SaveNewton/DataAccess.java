@@ -208,7 +208,7 @@ public class DataAccess{
     private static final int GameData_BasicLevelChance = 50; // means 1/50
     private static final int GameData_LevelChanceStep = 10;
     private static final int GameData_MaxWeaponCount = 999;
-    private static final int GameData_WeaponCountInOneApple = 2;
+    public static final int GameData_WeaponCountInOneApple = 2;
     
     private static String sGDCurrentKey;
     

@@ -303,13 +303,15 @@ public class GameLogic{
         switch(appleType){
         case Apple.AppleType_Golden:
         	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
-        	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
         	DataAccess.increaseStrongBowCountFromApple();
+        	Tips.add(new TipText(hitCenterLeftPos, hitCenterTopPos, 
+        			DataAccess.GameData_WeaponCountInOneApple, 300, TipText.WeaponIcon_StrongBow));
             break;
         case Apple.AppleType_Weak:
         	mGameEventHandler.sendEmptyMessage(GameEvent_EarnPrize);
-        	// TODO instead change weapon immediately, save weapon ammo instead, add special tips
         	DataAccess.increaseWeakBowCountFromApple();
+        	Tips.add(new TipText(hitCenterLeftPos, hitCenterTopPos, 
+        			DataAccess.GameData_WeaponCountInOneApple, 300, TipText.WeaponIcon_WeakBow));
             break;
         case Apple.AppleType_LowGravity:
             mCurGravity = mGravity * LowGravityRate;
@@ -888,6 +890,9 @@ public class GameLogic{
         public static final int ScaleTextTipRemoveTime_Normal = 1000;
         public static final int ScaleTextTipRemoveTime_Fast = 500;
         
+        public static final int WeaponIcon_StrongBow = 0;
+        public static final int WeaponIcon_WeakBow = 1;
+        
         private static final int MiddleNumber_ScoreLimit = 70;
         private static final int BigNumber_ScoreLimit = 140;
         private static final int ScoreTip_RemoveTime = 1000;
@@ -900,6 +905,7 @@ public class GameLogic{
         public int NumberValue;
         public int NumberSize;
         public boolean DrawNumberSymbol;
+        public int WeaponIconType;
         public float ScaleRate;
         public float Transparence;
         public int ScaleTextFrame;
@@ -907,32 +913,41 @@ public class GameLogic{
         
         private int mCreateTime;
         private float mCenterLeftPos, mCenterTopPos;
+        private int mDelayTime;
         private float mBottomTopPos; // used for Newton speak text
         private int mScaleTextTipScaleTime, mScaleTextTipRemoveTime;
         private int[] mScaleTextShakeTimeData;
         private float[] mScaleTextShakeScaleData;
         private int mScaleTextShakeEndTime;
         
+        public boolean CanShow;
+        
         private void initTipText(int type, float centerLeftPos, float centerTopPos, 
-                int numberValue, int numberSize){
+                int numberValue, int numberSize, int delayTime){
             Type = type;
             LeftPos = centerLeftPos;
             TopPos = centerTopPos;
             mCreateTime = 0;
             mCenterLeftPos = centerLeftPos;
             mCenterTopPos = centerTopPos;
+            mDelayTime = delayTime;
             ScaleRate = 1f;
             Transparence = 1f;
             NumberValue = numberValue;
             NumberSize = numberSize;
             DrawNumberSymbol = false;
+            WeaponIconType = -1;
+            CanShow = true;
+            if (delayTime > 0){
+            	CanShow = false;
+            }
         }
         
         // for scale text tip
         public TipText(int scaleTextFrame, float centerLeftPos, float centerTopPos, 
                 int tipTextScaleTime, int tipTextRemoveTime, int numberValue){
             initTipText(TipType_ScaleTextTip, centerLeftPos, centerTopPos, 
-                    numberValue, GameResource.NumberSize_SuperBig);
+                    numberValue, GameResource.NumberSize_SuperBig, 0);
             mScaleTextTipScaleTime = tipTextScaleTime;
             mScaleTextTipRemoveTime = tipTextRemoveTime;
             ScaleTextFrame = scaleTextFrame;
@@ -951,12 +966,28 @@ public class GameLogic{
             }else if (numberValue > BigNumber_ScoreLimit){
                 numberSize = GameResource.NumberSize_Big;
             }
-            initTipText(TipType_ScoreTip, centerLeftPos, centerTopPos, numberValue, numberSize);
+            initTipText(TipType_ScoreTip, centerLeftPos, centerTopPos, numberValue, numberSize, 0);
             DrawNumberSymbol = true;
             int scoreLength = String.valueOf(numberValue).length();
             int numberWidth = (scoreLength + 1) * GameResource.NumberWidth[numberSize] + // add 1 is for symbol
                 scoreLength * GameResource.NumberSplitWidth;
             LeftPos = centerLeftPos - numberWidth/2f;
+        }
+        
+        public TipText(float centerLeftPos, float centerTopPos, int numberValue, int delayTime, int weaponIconType){
+        	int numberSize = GameResource.NumberSize_Normal;
+            if (numberValue > MiddleNumber_ScoreLimit && numberValue <= BigNumber_ScoreLimit){
+                numberSize = GameResource.NumberSize_Middle;
+            }else if (numberValue > BigNumber_ScoreLimit){
+                numberSize = GameResource.NumberSize_Big;
+            }
+            initTipText(TipType_ScoreTip, centerLeftPos, centerTopPos, numberValue, numberSize, delayTime);
+            DrawNumberSymbol = true;
+            int scoreLength = String.valueOf(numberValue).length();
+            int numberWidth = (scoreLength + 1) * GameResource.NumberWidth[numberSize] + // add 1 is for symbol
+                scoreLength * GameResource.NumberSplitWidth;
+            LeftPos = centerLeftPos - numberWidth/2f;
+            WeaponIconType = weaponIconType;
         }
         
         // for newton speak text
@@ -975,6 +1006,14 @@ public class GameLogic{
         
         public void run(int timeDisFromLastFrame){
             mCreateTime += timeDisFromLastFrame;
+            if (!CanShow){
+	            if (mCreateTime < mDelayTime){
+	            	return;
+	            }else{
+	            	mCreateTime -= mDelayTime;
+	            	CanShow = true;
+	            }
+            }
             switch(Type){
             case TipType_ScaleTextTip:
                 if (mCreateTime <= mScaleTextTipScaleTime){

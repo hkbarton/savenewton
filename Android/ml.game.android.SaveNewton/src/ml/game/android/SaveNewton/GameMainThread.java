@@ -55,11 +55,11 @@ public class GameMainThread extends Thread{
     
     private void drawGameFrame(Paint transPaint, Matrix drawMatrix, boolean isEndFrame){
         Canvas canvas = null;
-        if (GameResource.GameStage_Back0==null){
-        	return;
-        }
         try{
             canvas = mGameViewHolder.lockCanvas(null);
+            if (canvas==null){ // lock canvas fail
+            	return;
+            }
             // draw background
             int skyBackLeftPos = 0;
             for (int i=0;i<GameResource.GameStageSkyBackDrawCount;i++){
@@ -117,7 +117,7 @@ public class GameMainThread extends Thread{
             }
             // draw tip text
             drawTipText(canvas, drawMatrix, transPaint);
-            // draw score
+            // draw score and gold // TODO
             drawNumber(canvas, 
                     GameResource.GameStageWidth - GameResource.ScoreRightPosFromRightBorder,
                     GameResource.StatInfoTopPos, AchievementMgt.StatData.Score);
@@ -221,6 +221,9 @@ public class GameMainThread extends Thread{
         transPaint.setAlpha(255);
         for (int i=0; i<mGameLogic.Tips.size();i++){
             TipText tip = mGameLogic.Tips.get(i);
+            if (!tip.CanShow){
+            	continue;
+            }
             drawMatrix.reset();
             drawMatrix.postScale(tip.ScaleRate, tip.ScaleRate);
             drawMatrix.postTranslate(tip.LeftPos, tip.TopPos);
@@ -238,7 +241,7 @@ public class GameMainThread extends Thread{
                 }));
                 drawNumber(canvas, drawMatrix, transPaint, tip.NumberSize, 
                         GameResource.NumberWidth[tip.NumberSize] * tip.ScaleRate, tip.NumberValue, 
-                        tip.DrawNumberSymbol);
+                        tip.DrawNumberSymbol, tip.WeaponIconType);
             }
         }
         transPaint.setColorFilter(null);
@@ -255,7 +258,7 @@ public class GameMainThread extends Thread{
     }
     
     private void drawNumber(Canvas canvas, Matrix drawMatrix, Paint transPaint, 
-            int numberSize, float digitWidth, int value, boolean drawSymbol){
+            int numberSize, float digitWidth, int value, boolean drawSymbol, int weaponIconType){
         Bitmap[] numbers = null;
         switch(numberSize){
         case GameResource.NumberSize_Normal:
@@ -270,6 +273,14 @@ public class GameMainThread extends Thread{
         case GameResource.NumberSize_SuperBig:
             numbers = GameResource.SLNumbers;
             break;
+        }
+        if (weaponIconType>=0){
+	        if (weaponIconType==TipText.WeaponIcon_StrongBow){
+	        	canvas.drawBitmap(GameResource.TipIconWeapon_StrongBow, drawMatrix, transPaint);
+	        }else if (weaponIconType==TipText.WeaponIcon_WeakBow){
+	        	canvas.drawBitmap(GameResource.TipIconWeapon_WeakBow, drawMatrix, transPaint);
+	        }
+	        drawMatrix.postTranslate(digitWidth + GameResource.NumberSplitWidth * 2, 0);
         }
         if (drawSymbol){
             canvas.drawBitmap(GameResource.NumberSymbols[numberSize], drawMatrix, transPaint);
