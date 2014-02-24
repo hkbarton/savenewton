@@ -23,7 +23,6 @@ public class AudioResource{
     public static int SoundEffectID_ArrowInNewton;
     public static int SoundEffectID_Bow;
     public static int SoundEffectID_Prize;
-    public static int[] SoundEffectID_Speaks;
     
     public static void initAudio(Context context){
         sSoundEffectPool = new SoundPool(SoundEffectCount, AudioManager.STREAM_MUSIC, 0);
@@ -35,19 +34,6 @@ public class AudioResource{
         SoundEffectID_ArrowInNewton = sSoundEffectPool.load(context, R.raw.arrowinnewton, 0);
         SoundEffectID_Bow = sSoundEffectPool.load(context, R.raw.bow, 0);
         SoundEffectID_Prize = sSoundEffectPool.load(context, R.raw.prize, 0);
-        SoundEffectID_Speaks = new int[12];
-        SoundEffectID_Speaks[0] = sSoundEffectPool.load(context, R.raw.speak0, 0);
-        SoundEffectID_Speaks[1] = sSoundEffectPool.load(context, R.raw.speak1, 0);
-        SoundEffectID_Speaks[2] = sSoundEffectPool.load(context, R.raw.speak2, 0);
-        SoundEffectID_Speaks[3] = sSoundEffectPool.load(context, R.raw.speak3, 0);
-        SoundEffectID_Speaks[4] = sSoundEffectPool.load(context, R.raw.speak4, 0);
-        SoundEffectID_Speaks[5] = sSoundEffectPool.load(context, R.raw.speak5, 0);
-        SoundEffectID_Speaks[6] = sSoundEffectPool.load(context, R.raw.speak6, 0);
-        SoundEffectID_Speaks[7] = sSoundEffectPool.load(context, R.raw.speak7, 0);
-        SoundEffectID_Speaks[8] = sSoundEffectPool.load(context, R.raw.speak8, 0);
-        SoundEffectID_Speaks[9] = sSoundEffectPool.load(context, R.raw.speak9, 0);
-        SoundEffectID_Speaks[10] = sSoundEffectPool.load(context, R.raw.speak10, 0);
-        SoundEffectID_Speaks[11] = sSoundEffectPool.load(context, R.raw.speak11, 0);
     }
     
     public static void playBGM(Context context, int bgmID){

@@ -93,6 +93,8 @@ public final class GameResource{
     // Tool Button calculate Size and Position
     public static float ToolButtonWidth, ToolButtonTopPos, ToolButtonLeftMargin, ToolButtonHalfWidth;
     public static float ToolButtonLastLeftPos, ToolButtonFirstLeftPos;
+    // Gold Coin
+    public static int GoldCoinLeftPos, GoldCoinNumberLeftPos;
     
     public static Bitmap GameStage_Back0, GameStage_Back1, GameStage_Front, GameStage_Cloud;
     public static Bitmap[] NormalApple, SpecialApple, GoldenApple, GreenApple;
@@ -102,6 +104,7 @@ public final class GameResource{
     public static Bitmap[] Arrow;
     public static Bitmap WeakArrowGroundPart;
     public static Bitmap[] Numbers, MNumbers, LNumbers, SLNumbers, NumberSymbols;
+    public static Bitmap GoldCoin;
     public static Bitmap[] ScaleTipTexts;
     public static Bitmap PauseGameTip;
     public static Bitmap[] Newton;
@@ -539,6 +542,10 @@ public final class GameResource{
         TipIconWeapon_WeakBow = Bitmap.createScaledBitmap(TipIconWeapon_WeakBow, 
                 (int)(TipIconWeapon_WeakBow.getWidth()*hScaleRate), 
                 (int)(TipIconWeapon_WeakBow.getHeight()*hScaleRate), true);
+        // Gold Coin
+        GoldCoin = BitmapFactory.decodeResource(res, R.drawable.goldcoin, sNoScaleOp);
+        GoldCoin = Bitmap.createScaledBitmap(GoldCoin, (int)(GoldCoin.getWidth()*hScaleRate), 
+                (int)(GoldCoin.getHeight()*hScaleRate), true);
     }
     
     private static void initNewton(Resources res, float hScaleRate){
@@ -712,6 +719,9 @@ public final class GameResource{
         BowHandleTopPosLimit = BowStatusBar.getHeight() + BowHeight/2;
         BowHandleRightPosLimit = BowHandleBar.getWidth();
         BowHandleBottomPosLimit = (int)(GameStageHeight * (1 - Bow_BottomLimit_Rate)) - BowHeight/2;
+        // Gold Coin
+        GoldCoinLeftPos = BowStatusBarWidth + 5;
+        GoldCoinNumberLeftPos = GoldCoinLeftPos + GoldCoin.getWidth() + 3;
         // arrow related
         ArrowWidth = Arrow[0].getWidth();
         ArrowHeight = Arrow[0].getHeight();

@@ -29,7 +29,6 @@ public class GameLogic{
     public static final int GameEvent_EarnPrize = 5;
     public static final int GameEvent_AppleHitNewton = 6;
     public static final int GameEvent_LowGravityCountDown = 7;
-    public static final int GameEvent_NewtonSpeak = 8;
     public static final int GameEvent_GamePause = 100;
     public static final int GameEvent_GameResume = 101;
     public static final int GameEvent_GameOvering = 102;
@@ -324,6 +323,7 @@ public class GameLogic{
             break;
         }
         AchievementMgt.StatData.Score += addedScore;
+        DataAccess.GDGold++;
         mGameEventHandler.sendEmptyMessage(GameEvent_StatDataChange);
         Tips.add(new TipText(hitCenterLeftPos, hitCenterTopPos, addedScore));
     }
@@ -1125,8 +1125,6 @@ public class GameLogic{
                         : GameResource.SpeakText_ContinueMiss_StartFrame;
                 frame += mRandomGenerator.nextInt(GameResource.SpeakText_FrameCntOfEachStatus);
                 Tips.add(new TipText(frame, LeftPos + GameResource.NormalNewtonWidth/2f, TopPos));
-                mGameEventHandler.sendMessage(
-                        mGameEventHandler.obtainMessage(GameEvent_NewtonSpeak, frame, 0));
             }
         }
         
@@ -1291,8 +1289,6 @@ public class GameLogic{
                                 : GameResource.SpeakText_ShotByArrow_StartFrame;
                         tipFrame += mRandomGenerator.nextInt(GameResource.SpeakText_FrameCntOfEachStatus);
                         Tips.add(new TipText(tipFrame, endTipLeftPos, TopPos));
-                        mGameEventHandler.sendMessage(
-                                mGameEventHandler.obtainMessage(GameEvent_NewtonSpeak, tipFrame, 0));
                     }
                 }
                 break;

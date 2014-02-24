@@ -117,10 +117,14 @@ public class GameMainThread extends Thread{
             }
             // draw tip text
             drawTipText(canvas, drawMatrix, transPaint);
-            // draw score and gold // TODO
-            drawNumber(canvas, 
+            // draw score and gold coin
+            drawNumberFromRight(canvas, 
                     GameResource.GameStageWidth - GameResource.ScoreRightPosFromRightBorder,
                     GameResource.StatInfoTopPos, AchievementMgt.StatData.Score);
+            canvas.drawBitmap(GameResource.GoldCoin, GameResource.GoldCoinLeftPos, 
+            		GameResource.StatInfoTopPos, null);
+            drawNumberFromLeft(canvas, GameResource.GoldCoinNumberLeftPos,
+                    GameResource.StatInfoTopPos, DataAccess.GDGold);
             // draw Newton
             Newton curNewton = mGameLogic.CurNewton;
             if (curNewton!=null){
@@ -149,7 +153,7 @@ public class GameMainThread extends Thread{
             case Bow.BowType_Golden:
                 canvas.drawBitmap(GameResource.BowIcon[GameResource.GoldenBowIcon_FrameIndex], 
                         GameResource.BowIconLeftPos, GameResource.BowIconTopPos, null);
-                drawNumber(canvas, GameResource.BowIconCountRightPos, 
+                drawNumberFromRight(canvas, GameResource.BowIconCountRightPos, 
                         GameResource.BowIconCountTopPos, DataAccess.GDStrongBowCount);
                 canvas.drawBitmap(GameResource.GoldenBow[bow.CurrentShowFrame], 
                         GameResource.BowLeftPos, bow.TopPos, null);
@@ -157,7 +161,7 @@ public class GameMainThread extends Thread{
             case Bow.BowType_Weak:
                 canvas.drawBitmap(GameResource.BowIcon[GameResource.WeakBowIcon_FrameIndex], 
                         GameResource.BowIconLeftPos, GameResource.BowIconTopPos, null);
-                drawNumber(canvas, GameResource.BowIconCountRightPos, 
+                drawNumberFromRight(canvas, GameResource.BowIconCountRightPos, 
                         GameResource.BowIconCountTopPos, DataAccess.GDWeakBowCount);
                 canvas.drawBitmap(GameResource.NormalBow[bow.CurrentShowFrame], 
                         GameResource.BowLeftPos, bow.TopPos, null);
@@ -247,13 +251,22 @@ public class GameMainThread extends Thread{
         transPaint.setColorFilter(null);
     }
     
-    private void drawNumber(Canvas canvas, int rightPos, int topPos, int value){
+    private void drawNumberFromRight(Canvas canvas, int rightPos, int topPos, int value){
         String valueStr = String.valueOf(value);
         int length = valueStr.length();
         for (int i=length-1; i>=0; i--){
             int leftPos = rightPos - (length-i) * GameResource.NumberWidth[GameResource.NumberSize_Normal] - 
                 (length-i-1) * GameResource.NumberSplitWidth;
             canvas.drawBitmap(GameResource.Numbers[valueStr.charAt(i)-48], leftPos, topPos, null);
+        }
+    }
+    
+    private void drawNumberFromLeft(Canvas canvas, int leftPos, int topPos, int value){
+        String valueStr = String.valueOf(value);
+        int length = valueStr.length();
+        for (int i=0; i<length; i++){
+            canvas.drawBitmap(GameResource.Numbers[valueStr.charAt(i)-48], leftPos, topPos, null);
+            leftPos = leftPos + GameResource.NumberWidth[GameResource.NumberSize_Normal] + GameResource.NumberSplitWidth;
         }
     }
     

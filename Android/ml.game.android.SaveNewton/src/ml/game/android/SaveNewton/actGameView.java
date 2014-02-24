@@ -68,9 +68,6 @@ public class actGameView extends BaseGameActivity{
                     mVibrator.vibrate(60);
                 }
                 break;
-            case GameLogic.GameEvent_NewtonSpeak:
-                AudioResource.playSoundEffect(AudioResource.SoundEffectID_Speaks[msg.arg1]);
-                break;
             case GameLogic.GameEvent_GamePause:
             	ADManager.refreshAD(mAdView);
                 showPauseControl();
