@@ -22,7 +22,6 @@ import android.widget.RelativeLayout;
 
 public class actMain extends BaseGameActivity {
     private static final int MenuType_Main = 0;
-    private static final int MenuType_Options = 1;
     private static final int MenuType_Online = 2;
     private static final int LoadEvent_FinishLoadResource = 0;
     
@@ -228,7 +227,7 @@ public class actMain extends BaseGameActivity {
         btnMenu2 = new ImageView(this);
         btnMenu2.setId(2002);
         btnMenu2.setScaleType(ScaleType.FIT_CENTER);
-        btnMenu2.setImageResource(R.drawable.wbtnoptionssel);
+        btnMenu2.setImageResource(R.drawable.wbtnstoresel);
         RelativeLayout.LayoutParams menu2Ly = new RelativeLayout.LayoutParams(
                 GameResource.WBtn2Width, GameResource.WBtn2Height);
         menu2Ly.addRule(RelativeLayout.ABOVE, btnMenu3.getId());
@@ -248,23 +247,13 @@ public class actMain extends BaseGameActivity {
     private void setMenuEvent(){
         if (mMenuType==MenuType_Main){
             btnMenu1.setOnClickListener(menuPlay_Click);
-            btnMenu2.setOnClickListener(menuOptions_Click);
+            btnMenu2.setOnClickListener(menuStore_Click);
             btnMenu3.setOnClickListener(menuScore_Click);
             btnMenu4.setOnClickListener(menuOnline_Click);
-        }else if (mMenuType==MenuType_Options){
-            btnMenu1.setOnClickListener(menuSound_Click);
-            btnMenu2.setOnClickListener(menuVibration_Click);
-            // TODO btnMenu3.setOnClickListener(menuLevel_Click);
-            btnMenu4.setOnClickListener(menuToMainMenu_Click);
         }else if (mMenuType==MenuType_Online){
         	// TODO
         	btnMenu4.setOnClickListener(menuToMainMenu_Click);
         }
-    }
-    
-    private void toOptionsMenu(){
-        mMenuType = MenuType_Options;
-        animateOutMenu();
     }
     
     private void toOnlineMenu(){
@@ -280,21 +269,9 @@ public class actMain extends BaseGameActivity {
     private void resetMenuByType(){
         if (mMenuType==MenuType_Main){
             btnMenu1.setImageResource(R.drawable.wbtnplaysel);
-            btnMenu2.setImageResource(R.drawable.wbtnoptionssel);
+            btnMenu2.setImageResource(R.drawable.wbtnstoresel);
             btnMenu3.setImageResource(R.drawable.wbtnscoresel);
             btnMenu4.setImageResource(R.drawable.wbtnonlinesel);
-        }else if (mMenuType==MenuType_Options){
-            if (DataAccess.Pref_IsSound){
-                btnMenu1.setImageResource(R.drawable.wbtnsoundon);
-            }else{
-                btnMenu1.setImageResource(R.drawable.wbtnsoundoff);
-            }
-            if (DataAccess.Pref_IsVibration){
-                btnMenu2.setImageResource(R.drawable.wbtnvibrationon);
-            }else{
-                btnMenu2.setImageResource(R.drawable.wbtnvibrationoff);
-            }
-            btnMenu4.setImageResource(R.drawable.wbtnreturn);
         }else if (mMenuType==MenuType_Online){
         	btnMenu1.setImageResource(R.drawable.wbtnonlinetop);
         	btnMenu2.setImageResource(R.drawable.wbtnonlinelb);
@@ -321,16 +298,10 @@ public class actMain extends BaseGameActivity {
             DataAccess.setSoundPref(actMain.this, false);
             AudioResource.stopBGM(AudioResource.BGMID_Title);
             imgBtnSound.setImageResource(R.drawable.btnsound_off);
-            if (mMenuType==MenuType_Options){
-                btnMenu1.setImageResource(R.drawable.wbtnsoundoff);
-            }
         }else{
             DataAccess.setSoundPref(actMain.this, true);
             AudioResource.playBGM(actMain.this, AudioResource.BGMID_Title);
             imgBtnSound.setImageResource(R.drawable.btnsound_on);
-            if (mMenuType==MenuType_Options){
-                btnMenu1.setImageResource(R.drawable.wbtnsoundon);
-            }
         }
     }
     
@@ -338,9 +309,6 @@ public class actMain extends BaseGameActivity {
         if (DataAccess.Pref_IsVibration){
             DataAccess.setVibrationPref(actMain.this, false);
             imgBtnVibration.setImageResource(R.drawable.btnshake_off);
-            if (mMenuType==MenuType_Options){
-                btnMenu2.setImageResource(R.drawable.wbtnvibrationoff);
-            }
         }else{
             DataAccess.setVibrationPref(actMain.this, true);
             Vibrator vibrator = (Vibrator)actMain.this.getSystemService(Context.VIBRATOR_SERVICE);
@@ -348,9 +316,6 @@ public class actMain extends BaseGameActivity {
                 vibrator.vibrate(200);
             }
             imgBtnVibration.setImageResource(R.drawable.btnshake_on);
-            if (mMenuType==MenuType_Options){
-                btnMenu2.setImageResource(R.drawable.wbtnvibrationon);
-            }
         }
     }
     
@@ -403,13 +368,6 @@ public class actMain extends BaseGameActivity {
         }
     };
     
-    private OnClickListener menuOptions_Click = new OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            toOptionsMenu();
-        }
-    };
-    
     private OnClickListener menuScore_Click = new OnClickListener(){
         @Override
         public void onClick(View v) {
@@ -425,17 +383,11 @@ public class actMain extends BaseGameActivity {
         }
     };
     
-    private OnClickListener menuSound_Click = new OnClickListener(){
+    private OnClickListener menuStore_Click = new OnClickListener(){
         @Override
         public void onClick(View v) {
-            changePrefSound();
-        }
-    };
-    
-    private OnClickListener menuVibration_Click = new OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            changePrefVibration();
+        	Intent intent = new Intent(actMain.this, actStore.class);
+            actMain.this.startActivity(intent);
         }
     };
     

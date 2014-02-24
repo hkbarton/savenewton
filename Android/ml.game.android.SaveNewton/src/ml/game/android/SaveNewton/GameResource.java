@@ -179,7 +179,7 @@ public final class GameResource{
         BitmapFactory.decodeResource(resource, R.drawable.wbtnplay, op);
         WBtn1Width = (int)(sGameMenuHScaleRate * op.outWidth);
         WBtn1Height = (int)(sGameMenuHScaleRate * op.outHeight);
-        BitmapFactory.decodeResource(resource, R.drawable.wbtnoptions, op);
+        BitmapFactory.decodeResource(resource, R.drawable.wbtnstore, op);
         WBtn2Width = (int)(sGameMenuHScaleRate * op.outWidth);
         WBtn2Height = (int)(sGameMenuHScaleRate * op.outHeight);
         BitmapFactory.decodeResource(resource, R.drawable.wbtnscore, op);
