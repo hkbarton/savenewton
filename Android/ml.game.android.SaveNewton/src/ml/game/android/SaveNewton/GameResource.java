@@ -80,6 +80,10 @@ public final class GameResource{
     // Tool Button Design Size and Position
     private static final int ToolButtonOriWidthHeight = 50;
     private static final int ToolButtonTextSize = 20;
+    // Store Item Icon
+    private static final int StoreItemIconOriWidth = 120;
+    private static final int StoreItemOriTopMargin = 30;
+    private static final int StoreItemIconOriLeftMargin = 35;
     
     public static int GameStageWidth; // in Pixel
     public static int GameStageHeight; // in Pixel
@@ -95,6 +99,8 @@ public final class GameResource{
     public static float ToolButtonLastLeftPos, ToolButtonFirstLeftPos;
     // Gold Coin
     public static int GoldCoinLeftPos, GoldCoinNumberLeftPos;
+    // Store Item Background Size
+    public static int StoreItemBgSize, StoreItemIconLeftMargin, StoreItemTopMargin;
     
     public static Bitmap GameStage_Back0, GameStage_Back1, GameStage_Front, GameStage_Cloud;
     public static Bitmap[] NormalApple, SpecialApple, GoldenApple, GreenApple;
@@ -259,6 +265,10 @@ public final class GameResource{
         initNewtonSpeakText(res, hScaleRate);
         initToolButton(res, wScaleRate);
         sNoScaleOp = null;
+        // init size number for normal activity
+        StoreItemBgSize = (int)(StoreItemIconOriWidth * wScaleRate);
+        StoreItemIconLeftMargin = (int)(StoreItemIconOriLeftMargin * wScaleRate);
+        StoreItemTopMargin = (int)(StoreItemOriTopMargin * hScaleRate);
     }
     
     private static void initAppleResource(Resources res, float scaleRate){

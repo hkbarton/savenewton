@@ -197,12 +197,12 @@ public class DataAccess{
     
     private static final String GameData_CurrentKey = "gd_current_key";
     
-    private static final String GameData_GoldenAppleLevel = "gd_golden_apple_level";
-    private static final String GameData_GreenAppleLevel = "gd_green_apple_level";
-    private static final String GameData_GravityAppleLevel = "gd_gravity_apple_level";
-    private static final String GameData_StrongBowCount = "gd_strong_bow_count";
-    private static final String GameData_WeakBowCount = "gd_weak_bow_count";
-    private static final String GameData_Gold = "gd_gold";
+    public static final String GameData_GoldenAppleLevel = "gd_golden_apple_level";
+    public static final String GameData_GreenAppleLevel = "gd_green_apple_level";
+    public static final String GameData_GravityAppleLevel = "gd_gravity_apple_level";
+    public static final String GameData_StrongBowCount = "gd_strong_bow_count";
+    public static final String GameData_WeakBowCount = "gd_weak_bow_count";
+    public static final String GameData_Gold = "gd_gold";
     
     private static final int GameData_MaxLevel = 5;
     private static final int GameData_BasicLevelChance = 50; // means 1/50
@@ -329,6 +329,25 @@ public class DataAccess{
     	if (GDWeakBowCount < GameData_MaxWeaponCount){
     		GDWeakBowCount += GameData_WeaponCountInOneApple;
     	}
+    }
+    
+    public static float getGameDataByKey(String key){
+    	if (key.equals(GameData_GoldenAppleLevel)){
+    		return GDGoldenAppleLevel;
+    	}
+    	if (key.equals(GameData_GreenAppleLevel)){
+    		return GDGreenAppleLevel;
+    	}
+    	if (key.equals(GameData_GravityAppleLevel)){
+    		return GDGravityAppleLevel;
+    	}
+    	if (key.equals(GameData_StrongBowCount)){
+    		return GDStrongBowCount;
+    	}
+    	if (key.equals(GameData_WeakBowCount)){
+    		return GDWeakBowCount;
+    	}
+    	return 0;
     }
     
     // init sensitive game data
