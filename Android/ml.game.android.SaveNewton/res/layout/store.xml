@@ -15,15 +15,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </RelativeLayout>
-        <LinearLayout android:id="@+id/actStore_StoreItem"
-            android:layout_width="match_parent"
+        <HorizontalScrollView android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:scrollbars="none">
+	        <LinearLayout android:id="@+id/actStore_StoreItem"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal">
+	        </LinearLayout>
+        </HorizontalScrollView>
     </LinearLayout>
-    <RelativeLayout android:id="@+id/actStore_BottomPanel"
+    <LinearLayout android:id="@+id/actStore_BottomPanel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-    </RelativeLayout>
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView android:id="@+id/actStore_ItemDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="16sp"/>
+        <RelativeLayout android:id="@+id/actStore_OpPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -203,12 +203,19 @@ public class DataAccess{
     public static final String GameData_StrongBowCount = "gd_strong_bow_count";
     public static final String GameData_WeakBowCount = "gd_weak_bow_count";
     public static final String GameData_Gold = "gd_gold";
+    public static final String GameData_DollarToGold1 = "gd_dollar2gold1";
+    public static final String GameData_DollarToGold2 = "gd_dollar2gold2";
+    public static final String GameData_DollarToGold3 = "gd_dollar2gold3";
+    public static final String GameData_RemoveAD = "gd_remove_ad";
     
-    private static final int GameData_MaxLevel = 5;
+    public static final int GameData_MaxLevel = 5;
     private static final int GameData_BasicLevelChance = 50; // means 1/50
     private static final int GameData_LevelChanceStep = 10;
     private static final int GameData_MaxWeaponCount = 999;
     public static final int GameData_WeaponCountInOneApple = 2;
+    public static final int GameData_DollarToGold1Value = 10000; // $0.99
+    public static final int GameData_DollarToGold2Value = 22000; // $1.99
+    public static final int GameData_DollarToGold3Value = 35000; // $2.99
     
     private static String sGDCurrentKey;
     

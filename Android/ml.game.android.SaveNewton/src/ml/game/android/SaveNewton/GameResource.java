@@ -83,7 +83,9 @@ public final class GameResource{
     // Store Item Icon
     private static final int StoreItemIconOriWidth = 120;
     private static final int StoreItemOriTopMargin = 30;
-    private static final int StoreItemIconOriLeftMargin = 35;
+    private static final int StoreItemIconOriLeftMargin = 20;
+    private static final int StoreItemIconOriPadding = 30;
+    private static final int StoreItemLevelStarOriSize = 20;
     
     public static int GameStageWidth; // in Pixel
     public static int GameStageHeight; // in Pixel
@@ -100,7 +102,7 @@ public final class GameResource{
     // Gold Coin
     public static int GoldCoinLeftPos, GoldCoinNumberLeftPos;
     // Store Item Background Size
-    public static int StoreItemBgSize, StoreItemIconLeftMargin, StoreItemTopMargin;
+    public static int StoreItemBgSize, StoreItemIconLeftMargin, StoreItemTopMargin, StoreItemIconPadding, StoreItemLevelStarSize;
     
     public static Bitmap GameStage_Back0, GameStage_Back1, GameStage_Front, GameStage_Cloud;
     public static Bitmap[] NormalApple, SpecialApple, GoldenApple, GreenApple;
@@ -157,6 +159,7 @@ public final class GameResource{
     public static int WBtn1Width, WBtn1Height, WBtn2Width, WBtn2Height;
     public static int WBtn3Width, WBtn3Height, WBtn4Width, WBtn4Height;
     public static int WBtnLeftMargin;
+    public static int BuyButtonWidth, BuyButtonHeight;
     
     private static BitmapFactory.Options sNoScaleOp;
     
@@ -195,6 +198,10 @@ public final class GameResource{
         WBtn4Width = (int)(sGameMenuHScaleRate * op.outWidth);
         WBtn4Height = (int)(sGameMenuHScaleRate * op.outHeight);
         WBtnLeftMargin = GameStageWidth / 2;
+        // buy button
+        BitmapFactory.decodeResource(resource, R.drawable.buybutton, op);
+        BuyButtonWidth = (int)(sGameMenuHScaleRate * op.outWidth);
+        BuyButtonHeight = (int)(sGameMenuHScaleRate * op.outHeight);
     }
     
     private static Bitmap scaleGameStage(Bitmap oriGameStage){
@@ -269,6 +276,8 @@ public final class GameResource{
         StoreItemBgSize = (int)(StoreItemIconOriWidth * wScaleRate);
         StoreItemIconLeftMargin = (int)(StoreItemIconOriLeftMargin * wScaleRate);
         StoreItemTopMargin = (int)(StoreItemOriTopMargin * hScaleRate);
+        StoreItemIconPadding = (int)(StoreItemIconOriPadding * wScaleRate);
+        StoreItemLevelStarSize = (int)(StoreItemLevelStarOriSize * wScaleRate);
     }
     
     private static void initAppleResource(Resources res, float scaleRate){
