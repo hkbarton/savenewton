@@ -24,6 +24,7 @@ public class actMain extends BaseGameActivity {
     private static final int MenuType_Main = 0;
     private static final int MenuType_Online = 2;
     private static final int LoadEvent_FinishLoadResource = 0;
+    private static final int LoadEvent_ShowAD = 1;
     
     private boolean mLoadComplete = false;
     private int mMenuType = MenuType_Main;
@@ -40,6 +41,9 @@ public class actMain extends BaseGameActivity {
             case LoadEvent_FinishLoadResource:
                 finishLoadResource();
                 break;
+            case LoadEvent_ShowAD:
+            	mAdView = ADManager.loadAD(actMain.this, mainly);
+            	break;
             }
         }
     };
@@ -50,7 +54,6 @@ public class actMain extends BaseGameActivity {
         GameResource.preInit(this.getWindowManager().getDefaultDisplay().getWidth(), 
                 this.getWindowManager().getDefaultDisplay().getHeight());
         initLayout();
-        mAdView = ADManager.loadAD(this, mainly);
         asyncLoadResource();
     }
     
@@ -98,11 +101,12 @@ public class actMain extends BaseGameActivity {
         Thread loadThread = new Thread(){
             @Override
             public void run(){
+            	AchievementMgt.initAchievements();
+            	DataAccess.init(actMain.this);
+                mLoadEventHandler.sendEmptyMessage(LoadEvent_ShowAD);
+                AchievementMgt.init(actMain.this);
                 GameResource.init(actMain.this.getResources());
                 AudioResource.initAudio(actMain.this);
-                AchievementMgt.initAchievements();
-                DataAccess.init(actMain.this);
-                AchievementMgt.init(actMain.this);
                 mMenuInAnimations = new Animation[4];
                 mMenuOutAnimations = new Animation[4];
                 mMenuInAnimations[0] = AnimationUtils.loadAnimation(actMain.this, R.anim.menu_popup);

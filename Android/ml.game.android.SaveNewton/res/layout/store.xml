@@ -33,7 +33,9 @@
         <TextView android:id="@+id/actStore_ItemDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="#ba5300"
             android:textSize="16sp"/>
         <RelativeLayout android:id="@+id/actStore_OpPanel"
             android:layout_width="match_parent"

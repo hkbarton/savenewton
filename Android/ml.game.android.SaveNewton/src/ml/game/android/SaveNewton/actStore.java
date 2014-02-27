@@ -1,17 +1,25 @@
 package ml.game.android.SaveNewton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.android.gms.ads.AdView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -51,15 +59,166 @@ public class actStore extends FragmentActivity{
 		}
 	}
 	
+	private static class CountPickerView extends LinearLayout{
+		public interface OnCountChangeListener {
+			void onCountChange(int count);
+		}
+		
+		public int MinValue = 0;
+		public int MaxValue = 0;
+		public int Value = 0;
+		private LinearLayout mNumberContainer;
+		private int mNumberWidth, mNumberHeight;
+		private OnCountChangeListener mOnCountChangeListener;
+		private boolean mChangeCountThreadStopFlag = false;
+		private int mChangeCountThreadModel;
+		private boolean mIsChangeCountThreadRunning = false;
+		
+		@SuppressLint("HandlerLeak")
+		private Handler mChangeCountMessageHander = new Handler(){
+			@Override
+	        public void handleMessage(Message msg){
+				switch(msg.what){
+				case 0:
+					plusCount();
+					break;
+				case 1:
+					minusCount();
+					break;
+				}
+			}
+		};
+		
+		private void startChangeCountThread(int model){ // model=0 plus, model=1 minus
+			if (mIsChangeCountThreadRunning){
+				return;
+			}
+			mChangeCountThreadModel = model;
+			mChangeCountThreadStopFlag = false;
+			Thread worker = new Thread(){
+				@Override
+				public void run(){
+					mIsChangeCountThreadRunning = true;
+					while(!mChangeCountThreadStopFlag){
+						mChangeCountMessageHander.sendEmptyMessage(mChangeCountThreadModel);
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {}
+					}
+					mIsChangeCountThreadRunning = false;
+				}
+			};
+			worker.start();
+		}
+		
+		private void minusCount(){
+			if (Value<=MinValue){
+				return;
+			}
+			Value--;
+			refresh();
+			if (mOnCountChangeListener!=null){
+				mOnCountChangeListener.onCountChange(Value);
+			}
+		}
+		
+		private void plusCount(){
+			if (Value>=MaxValue){
+				return;
+			}
+			Value++;
+			refresh();
+			if (mOnCountChangeListener!=null){
+				mOnCountChangeListener.onCountChange(Value);
+			}
+		}
+		
+		public CountPickerView(Context context) {
+			super(context);
+			this.setOrientation(LinearLayout.HORIZONTAL);
+			mNumberWidth = (int)(GameResource.Numbers[0].getWidth() * 1.7);
+			mNumberHeight = (int)(GameResource.Numbers[0].getHeight() * 1.7);
+			LinearLayout.LayoutParams lypButton = new LinearLayout.LayoutParams(mNumberHeight, mNumberHeight);
+			// minus button
+			ImageView btnMinus = new ImageView(context);
+			btnMinus.setImageResource(R.drawable.minusbuttonsel);
+			btnMinus.setScaleType(ScaleType.FIT_CENTER);
+			btnMinus.setClickable(true);
+			btnMinus.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					switch(event.getAction()){
+					case MotionEvent.ACTION_DOWN:
+						startChangeCountThread(1);
+						return true;
+					case MotionEvent.ACTION_UP:
+						mChangeCountThreadStopFlag = true;
+						return true;
+					default:
+						return false;
+					}
+				}
+			});
+			this.addView(btnMinus, lypButton);
+			// number container
+			mNumberContainer = new LinearLayout(context);
+			mNumberContainer.setOrientation(LinearLayout.HORIZONTAL);
+			LinearLayout.LayoutParams lypNumberContainer = new LinearLayout.LayoutParams(
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			int margin = (int)(10 * this.getResources().getDisplayMetrics().density);
+			lypNumberContainer.leftMargin = lypNumberContainer.rightMargin = margin;
+			this.addView(mNumberContainer, lypNumberContainer);
+			// plus button
+			ImageView btnPlus = new ImageView(context);
+			btnPlus.setImageResource(R.drawable.plusbuttonsel);
+			btnPlus.setScaleType(ScaleType.FIT_CENTER);
+			btnPlus.setClickable(true);
+			btnPlus.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					switch(event.getAction()){
+					case MotionEvent.ACTION_DOWN:
+						startChangeCountThread(0);
+						return true;
+					case MotionEvent.ACTION_UP:
+						mChangeCountThreadStopFlag = true;
+						return true;
+					default:
+						return false;
+					}
+				}
+			});
+			this.addView(btnPlus, lypButton);
+			refresh();
+		}
+		
+		public void refresh(){
+			mNumberContainer.removeAllViews();
+			LinearLayout.LayoutParams lypNumber = new LinearLayout.LayoutParams(mNumberWidth, mNumberHeight);
+			String numberStr = String.valueOf(Value);
+			for (int i=0;i<numberStr.length();i++){
+				ImageView numberView = new ImageView(this.getContext());
+				numberView.setImageBitmap(GameResource.MNumbers[numberStr.charAt(i)-48]);
+				mNumberContainer.addView(numberView, lypNumber);
+			}
+		}
+		
+		public void setOnCountChangeListener(OnCountChangeListener onCountChangeListener){
+			mOnCountChangeListener = onCountChangeListener;
+		}
+	}
+	
 	private static class ViewStoreItem extends LinearLayout{
 		public interface OnSelectListener{
 			void onSelected(View v, String relatedGameData);
 		}
 		
 		private ImageView mIcon;
+		private TextView mTxtTitle;
+		private LinearLayout mStarContainer;
 		private boolean mIsLevelItem = false;
 		private OnSelectListener mOnSelectListener;
-		public boolean mIsSelected = false;
+		public boolean IsSelected = false;
 		
 		public String RelatedGameData;
 		
@@ -72,7 +231,7 @@ public class actStore extends FragmentActivity{
 		};
 		
 		private void onSelectStatusChange(){
-			if (mIsSelected){
+			if (IsSelected){
 				mIcon.setBackgroundResource(R.drawable.storeitembg_hover);
 				if (mOnSelectListener!=null){
 					mOnSelectListener.onSelected(this, RelatedGameData);
@@ -96,7 +255,7 @@ public class actStore extends FragmentActivity{
 				return "G + " + String.valueOf(DataAccess.GameData_DollarToGold2Value);
 			}else if (RelatedGameData.equals(DataAccess.GameData_DollarToGold3)){
 				return "G + " + String.valueOf(DataAccess.GameData_DollarToGold3Value);
-			}else if (RelatedGameData.equals(DataAccess.GameData_RemoveAD)){
+			}else if (RelatedGameData.equals(DataAccess.GameData_ShowAD)){
 				return "Remove AD";
 			}
 			return "";
@@ -119,10 +278,27 @@ public class actStore extends FragmentActivity{
 				return R.drawable.gold2;
 			}else if (RelatedGameData.equals(DataAccess.GameData_DollarToGold3)){
 				return R.drawable.gold3;
-			}else if (RelatedGameData.equals(DataAccess.GameData_RemoveAD)){
-				return 0; // TODO
+			}else if (RelatedGameData.equals(DataAccess.GameData_ShowAD)){
+				return R.drawable.item_removead;
 			}
 			return 0;
+		}
+		
+		private void renderLevelStar(){
+			mStarContainer.removeAllViews();
+			int activeStarCnt = (int)DataAccess.getGameDataByKey(RelatedGameData);
+			LinearLayout.LayoutParams lypStar = new LinearLayout.LayoutParams(GameResource.StoreItemLevelStarSize, 
+					GameResource.StoreItemLevelStarSize);
+			for (int i=0;i<DataAccess.GameData_MaxLevel;i++){
+				ImageView star = new ImageView(this.getContext());
+				if (activeStarCnt>0){
+					star.setImageResource(R.drawable.star_active);
+					activeStarCnt--;
+				}else{
+					star.setImageResource(R.drawable.star);
+				}
+				mStarContainer.addView(star, lypStar);
+			}
 		}
 		
 		public ViewStoreItem(Context context, String relatedGameData) {
@@ -136,7 +312,8 @@ public class actStore extends FragmentActivity{
 			// init layout by game data type
 			this.setOrientation(LinearLayout.VERTICAL);
 			// Title
-			TextView txtTitle = new TextView(context);
+			mTxtTitle = new TextView(context);
+			TextView txtTitle = mTxtTitle;
 			LinearLayout.LayoutParams lypTitle = new LinearLayout.LayoutParams(GameResource.StoreItemBgSize, 
 					LayoutParams.WRAP_CONTENT);
 			lypTitle.topMargin = GameResource.StoreItemTopMargin;
@@ -157,24 +334,13 @@ public class actStore extends FragmentActivity{
 			mIcon.setImageResource(getIconResourceIDByGameData());
 			// level star if need
 			if (mIsLevelItem){
-				LinearLayout starContainer = new LinearLayout(context);
+				mStarContainer = new LinearLayout(context);
+				LinearLayout starContainer = mStarContainer;
 				starContainer.setOrientation(LinearLayout.HORIZONTAL);
 				LinearLayout.LayoutParams lypStarContainer = new LinearLayout.LayoutParams(GameResource.StoreItemBgSize, 
 						LayoutParams.WRAP_CONTENT);
 				starContainer.setGravity(Gravity.CENTER);
-				int activeStarCnt = (int)DataAccess.getGameDataByKey(relatedGameData);
-				LinearLayout.LayoutParams lypStar = new LinearLayout.LayoutParams(GameResource.StoreItemLevelStarSize, 
-						GameResource.StoreItemLevelStarSize);
-				for (int i=0;i<DataAccess.GameData_MaxLevel;i++){
-					ImageView star = new ImageView(context);
-					if (activeStarCnt>0){
-						star.setImageResource(R.drawable.star_active);
-						activeStarCnt--;
-					}else{
-						star.setImageResource(R.drawable.star);
-					}
-					starContainer.addView(star, lypStar);
-				}
+				renderLevelStar();
 				this.addView(starContainer, lypStarContainer);
 			}
 			// bind event listener
@@ -186,20 +352,135 @@ public class actStore extends FragmentActivity{
 		}
 		
 		public void select(){
-			mIsSelected = true;
+			IsSelected = true;
 			onSelectStatusChange();
 		}
 		
 		public void unSelect(){
-			mIsSelected = false;
+			IsSelected = false;
 			onSelectStatusChange();
+		}
+		
+		public void refresh(){
+			mTxtTitle.setText(getTitleByRelatedGameData());
+			if (mIsLevelItem){
+				renderLevelStar();
+			}
 		}
 	}
 	
+	private static class Order{
+		public String RelatedGameData;
+		public int Count;
+		public boolean IsValidate;
+		public SpannableStringBuilder CostStr;
+		public boolean IsCountableOrder;
+		private boolean mIsDollarOrder;
+		
+		private static HashMap<String, String> OrderDescription = new HashMap<String, String>();
+		static{
+			OrderDescription.put(DataAccess.GameData_GoldenAppleLevel, 
+					"Increase the chance of getting the Golden Apple");
+			OrderDescription.put(DataAccess.GameData_GreenAppleLevel, 
+					"Increase the chance of getting the Green Apple");
+			OrderDescription.put(DataAccess.GameData_GravityAppleLevel, 
+					"Increase the chance of getting the Low Gravity Apple");
+			OrderDescription.put(DataAccess.GameData_StrongBowCount, 
+					"Buy ammunition of power bow, power bow release 3 arrows each time");
+			OrderDescription.put(DataAccess.GameData_WeakBowCount, 
+					"Buy ammunition of skill bow, score will be double when using skill bow");
+			OrderDescription.put(DataAccess.GameData_DollarToGold1, 
+					"Get " + String.valueOf(DataAccess.GameData_DollarToGold1Value) + " gold coin");
+			OrderDescription.put(DataAccess.GameData_DollarToGold2, 
+					"Get " + String.valueOf(DataAccess.GameData_DollarToGold2Value) + " gold coin");
+			OrderDescription.put(DataAccess.GameData_DollarToGold3, 
+					"Get " + String.valueOf(DataAccess.GameData_DollarToGold3Value) + " gold coin");
+			OrderDescription.put(DataAccess.GameData_ShowAD, 
+					"Support the developer, remove AD after you buy this");
+		}
+		
+		public Order(String relatedGameData){
+			RelatedGameData = relatedGameData;
+			refresh();
+		}
+		
+		public String getOrderDescription(){
+			if (OrderDescription.containsKey(RelatedGameData)){
+				return OrderDescription.get(RelatedGameData);
+			}
+			return "";
+		}
+		
+		public void refresh(){
+			mIsDollarOrder = false;
+			IsValidate = false;
+			IsCountableOrder = false;
+			CostStr = new SpannableStringBuilder();
+			CostStr.append("Cost: ");
+			int cost = 0;
+			if (RelatedGameData.equals(DataAccess.GameData_GoldenAppleLevel)
+					|| RelatedGameData.equals(DataAccess.GameData_GreenAppleLevel)
+					|| RelatedGameData.equals(DataAccess.GameData_GravityAppleLevel)){
+				cost = DataAccess.getNextLevelCost(RelatedGameData);
+				CostStr.clear();
+				CostStr.append("Next Level Cost: ");
+			}else if (RelatedGameData.equals(DataAccess.GameData_StrongBowCount)
+					|| RelatedGameData.equals(DataAccess.GameData_WeakBowCount)){
+				cost = DataAccess.getBowWeaponCost(Count);
+				IsCountableOrder = true;
+			}else if (RelatedGameData.equals(DataAccess.GameData_DollarToGold1)
+					|| RelatedGameData.equals(DataAccess.GameData_DollarToGold2)
+					|| RelatedGameData.equals(DataAccess.GameData_DollarToGold3)
+					|| RelatedGameData.equals(DataAccess.GameData_ShowAD)){
+				mIsDollarOrder = true;
+				// TODO
+			}
+			if (!mIsDollarOrder){
+				int spanStart = CostStr.length() - 1;
+				CostStr.append(String.valueOf(cost));
+				if (DataAccess.GDGold>cost && cost>0){
+					CostStr.setSpan(new ForegroundColorSpan(Color.YELLOW), spanStart, 
+							CostStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					IsValidate = true;
+				}else{
+					CostStr.setSpan(new ForegroundColorSpan(Color.RED), spanStart, 
+							CostStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				}
+			}else{
+				// TODO append dollar value
+			}
+		}
+		
+		public void executeOrder(){
+			if (IsValidate){
+				if (RelatedGameData.equals(DataAccess.GameData_GoldenAppleLevel)
+						|| RelatedGameData.equals(DataAccess.GameData_GreenAppleLevel)
+						|| RelatedGameData.equals(DataAccess.GameData_GravityAppleLevel)){
+					DataAccess.levelUp(RelatedGameData);
+				}else if (RelatedGameData.equals(DataAccess.GameData_StrongBowCount)
+						|| RelatedGameData.equals(DataAccess.GameData_WeakBowCount)){
+					DataAccess.buyBowWeapon(RelatedGameData, Count);
+					Count = 0;
+				}else if (RelatedGameData.equals(DataAccess.GameData_DollarToGold1)
+						|| RelatedGameData.equals(DataAccess.GameData_DollarToGold2)
+						|| RelatedGameData.equals(DataAccess.GameData_DollarToGold3)
+						|| RelatedGameData.equals(DataAccess.GameData_ShowAD)){
+					// TODO
+				}
+				refresh();
+			}
+		}
+	}
 	
 	private AdView mADView;
 	private List<ViewStoreItem> mItemViews;
+	private TextView mTxtItemDescription;
+	private GoldCountView mGoldCntView;
 	private ImageView mBtnBuy;
+	private TextView mTxtCost;
+	private CountPickerView mCountPicker;
+	private Order mCurOrder;
+	
 	private ViewStoreItem.OnSelectListener mOnItemSelected = new ViewStoreItem.OnSelectListener() {
 		@Override
 		public void onSelected(View v, String relatedGameData) {
@@ -209,7 +490,8 @@ public class actStore extends FragmentActivity{
 						mItemViews.get(i).unSelect();
 					}
 				}
-				// TODO
+				mCurOrder = new Order(relatedGameData);
+				updateDetailPanelInfo(true);
 			}
 		}
 	};
@@ -225,6 +507,46 @@ public class actStore extends FragmentActivity{
 		parent.addView(itemView, layoutParams);
 		itemView.setOnSelectListener(mOnItemSelected);
 		return itemView;
+	}
+	
+	private void refreshSelectedStoreItem(){
+		if (mItemViews!=null){
+			for (int i=0;i<mItemViews.size();i++){
+				ViewStoreItem item = mItemViews.get(i);
+				if (item.IsSelected){
+					item.refresh();
+					break;
+				}
+			}
+		}
+	}
+	
+	private void updateDetailPanelInfo(boolean resetCountPicker){
+		if (mCurOrder!=null){
+			mTxtItemDescription.setText(mCurOrder.getOrderDescription());
+			mTxtCost.setText(mCurOrder.CostStr);
+			if (mCurOrder.IsValidate){
+				mBtnBuy.setImageResource(R.drawable.buybutton_sel);
+			}else{
+				mBtnBuy.setImageResource(R.drawable.buybutton_disable);
+			}
+			if (resetCountPicker){
+				if (mCurOrder.IsCountableOrder){
+					int curCount = 0;
+					if (mCurOrder.RelatedGameData.equals(DataAccess.GameData_StrongBowCount)){
+						curCount = DataAccess.GDStrongBowCount;
+					}else if (mCurOrder.RelatedGameData.equals(DataAccess.GameData_WeakBowCount)){
+						curCount = DataAccess.GDWeakBowCount;
+					}
+					mCountPicker.Value = 0;
+					mCountPicker.MaxValue = DataAccess.GameData_MaxWeaponCount - curCount;
+					mCountPicker.refresh();
+					mCountPicker.setVisibility(View.VISIBLE);
+				}else{
+					mCountPicker.setVisibility(View.GONE);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -244,8 +566,8 @@ public class actStore extends FragmentActivity{
         mItemViews.add(addStoreItem(this, DataAccess.GameData_DollarToGold1, storeItemContainer, false));
         mItemViews.add(addStoreItem(this, DataAccess.GameData_DollarToGold2, storeItemContainer, false));
         mItemViews.add(addStoreItem(this, DataAccess.GameData_DollarToGold3, storeItemContainer, false));
-        mItemViews.add(addStoreItem(this, DataAccess.GameData_RemoveAD, storeItemContainer, true));
-        // Init Detail Panel
+        mItemViews.add(addStoreItem(this, DataAccess.GameData_ShowAD, storeItemContainer, true));
+        // ====== Init Detail Panel
         RelativeLayout opPanel = (RelativeLayout)this.findViewById(R.id.actStore_OpPanel);
         float density = this.getResources().getDisplayMetrics().density;
         LinearLayout lyDetailPanel = new LinearLayout(this);
@@ -256,11 +578,41 @@ public class actStore extends FragmentActivity{
         int panelPadding = (int)(7 * density);
         lyDetailPanel.setPadding(panelPadding, panelPadding, panelPadding, panelPadding);
         opPanel.addView(lyDetailPanel, lypDetailPanel);
-        GoldCountView goldCntView = new GoldCountView(this);
-        RelativeLayout.LayoutParams lypGoldCntView = new RelativeLayout.LayoutParams(
+        mTxtItemDescription = (TextView)this.findViewById(R.id.actStore_ItemDesc);
+        // Gold View
+        mGoldCntView = new GoldCountView(this);
+        LinearLayout.LayoutParams lypGoldCntView = new LinearLayout.LayoutParams(
         		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        lyDetailPanel.addView(goldCntView, lypGoldCntView);
-        // Buy button
+        lypGoldCntView.gravity = Gravity.BOTTOM;
+        lyDetailPanel.addView(mGoldCntView, lypGoldCntView);
+        // Count Input
+        mCountPicker = new CountPickerView(this);
+        mCountPicker.setVisibility(View.GONE);
+        LinearLayout.LayoutParams lypCountPicker = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lypCountPicker.leftMargin = (int)(20 * density);
+        lyDetailPanel.addView(mCountPicker, lypCountPicker);
+        mCountPicker.setOnCountChangeListener(new CountPickerView.OnCountChangeListener() {
+			@Override
+			public void onCountChange(int count) {
+				if (mCurOrder!=null){
+					mCurOrder.Count = count;
+					mCurOrder.refresh();
+					updateDetailPanelInfo(false);
+				}
+			}
+		});
+        // Cost Text View
+        mTxtCost = new TextView(this);
+        TextView txtCost = mTxtCost;
+        LinearLayout.LayoutParams lypTxtCost = new LinearLayout.LayoutParams(
+        		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lypTxtCost.gravity = Gravity.BOTTOM;
+        lypTxtCost.leftMargin = (int)(20 * density);
+        txtCost.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        txtCost.setTypeface(null, Typeface.BOLD);
+        txtCost.setTextColor(Color.YELLOW);
+        lyDetailPanel.addView(txtCost, lypTxtCost);
+        // ====== Buy button
         mBtnBuy = new ImageView(this);
         ImageView btnBuy = mBtnBuy;
         btnBuy.setClickable(true);
@@ -272,6 +624,17 @@ public class actStore extends FragmentActivity{
         lypBtnBuy.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         lypBtnBuy.rightMargin = (int)(20 * density);
         opPanel.addView(btnBuy, lypBtnBuy);
+        btnBuy.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mCurOrder!=null && mCurOrder.IsValidate){
+					mCurOrder.executeOrder();
+					refreshSelectedStoreItem();
+					mGoldCntView.refresh();
+					updateDetailPanelInfo(true);
+				}
+			}
+		});
         // default select first item 
         firstItem.select();
 	}

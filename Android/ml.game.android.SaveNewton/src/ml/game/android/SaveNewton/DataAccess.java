@@ -194,7 +194,6 @@ public class DataAccess{
     }
     
     //-------------------------------------------- sensitive game data -----------------------------------------
-    
     private static final String GameData_CurrentKey = "gd_current_key";
     
     public static final String GameData_GoldenAppleLevel = "gd_golden_apple_level";
@@ -206,12 +205,14 @@ public class DataAccess{
     public static final String GameData_DollarToGold1 = "gd_dollar2gold1";
     public static final String GameData_DollarToGold2 = "gd_dollar2gold2";
     public static final String GameData_DollarToGold3 = "gd_dollar2gold3";
-    public static final String GameData_RemoveAD = "gd_remove_ad";
+    public static final String GameData_ShowAD = "gd_show_ad";
     
     public static final int GameData_MaxLevel = 5;
-    private static final int GameData_BasicLevelChance = 50; // means 1/50
+    private static final int GameData_LevelBaseCost = 500;
+    private static final int GameData_BowWeaponUnitCost = 10;
+    private static final int GameData_BasicLevelChance = 60; // means 1/60
     private static final int GameData_LevelChanceStep = 10;
-    private static final int GameData_MaxWeaponCount = 999;
+    public static final int GameData_MaxWeaponCount = 999;
     public static final int GameData_WeaponCountInOneApple = 2;
     public static final int GameData_DollarToGold1Value = 10000; // $0.99
     public static final int GameData_DollarToGold2Value = 22000; // $1.99
@@ -222,6 +223,7 @@ public class DataAccess{
     public static int GDGoldenAppleLevel, GDGreenAppleLevel, GDGravityAppleLevel;
     public static int GDStrongBowCount, GDWeakBowCount; // weapons
     public static int GDGold;
+    public static int GDShowAD;
     
     private static HashMap<String, Float> sGameDataDefaultValue = new HashMap<String, Float>();
     
@@ -234,6 +236,7 @@ public class DataAccess{
     	GDStrongBowCount = (int)getGameData(context, db, GameData_StrongBowCount);
     	GDWeakBowCount = (int)getGameData(context, db, GameData_WeakBowCount);
     	GDGold = (int)getGameData(context, db, GameData_Gold);
+    	GDShowAD = (int)getGameData(context, db, GameData_ShowAD);
     	db.close();
     }
     
@@ -319,11 +322,64 @@ public class DataAccess{
 		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_Gold, GDGold), sGDCurrentKey));
 		db.update("gamedata", data, "key=?", new String[]{GameData_Gold});
 		data.clear();
+		data.put("key", GameData_ShowAD);
+		data.put("value", SecueUtil.encryptData(getValueStoreStr(GameData_ShowAD, GDShowAD), sGDCurrentKey));
+		db.update("gamedata", data, "key=?", new String[]{GameData_ShowAD});
+		data.clear();
     	db.close();
     }
     
     public static int getChanceDataByLevel(int level){
-    	return GameData_BasicLevelChance - GameData_LevelChanceStep * (level-1);
+    	return GameData_BasicLevelChance - GameData_LevelChanceStep * level;
+    }
+    
+    public static int getNextLevelCost(String gameDataKey){
+    	int nextLevel = 1;
+    	if (gameDataKey.equals(GameData_GoldenAppleLevel)){
+    		nextLevel = GDGoldenAppleLevel + 1;
+    	}else if (gameDataKey.equals(GameData_GreenAppleLevel)){
+    		nextLevel = GDGreenAppleLevel + 1;
+    	}else if (gameDataKey.equals(GameData_GravityAppleLevel)){
+    		nextLevel = GDGravityAppleLevel + 1;
+    	}
+    	if (nextLevel > GameData_MaxLevel){
+    		return 0;
+    	}
+    	return (int)(Math.pow(2, nextLevel-1)*GameData_LevelBaseCost);
+    }
+    
+    public static void levelUp(String gameDataKey){
+    	int cost = getNextLevelCost(gameDataKey);
+    	if (cost>0 && GDGold>cost){
+    		GDGold = GDGold - cost;
+	    	if (gameDataKey.equals(GameData_GoldenAppleLevel)){
+	    		GDGoldenAppleLevel++;
+	    	}else if (gameDataKey.equals(GameData_GreenAppleLevel)){
+	    		GDGreenAppleLevel++;
+	    	}else if (gameDataKey.equals(GameData_GravityAppleLevel)){
+	    		GDGravityAppleLevel++;
+	    	}
+    	}
+    }
+    
+    public static int getBowWeaponCost(int count){
+    	if (count>0){
+    		return count * GameData_BowWeaponUnitCost;
+    	}
+    	return 0;
+    }
+    
+    public static void buyBowWeapon(String gameDataKey, int count){
+    	int cost = getBowWeaponCost(count);
+    	if (cost>0 && GDGold>cost){
+    		if (gameDataKey.equals(GameData_StrongBowCount)){
+    			GDGold = GDGold - cost;
+    			GDStrongBowCount += count;
+    		}else if (gameDataKey.equals(GameData_WeakBowCount)){
+    			GDGold = GDGold - cost;
+    			GDWeakBowCount += count;
+    		}
+    	}
     }
     
     public static void increaseStrongBowCountFromApple(){
@@ -359,11 +415,12 @@ public class DataAccess{
     
     // init sensitive game data
     static{
-    	sGameDataDefaultValue.put(GameData_GoldenAppleLevel, 1f);
-    	sGameDataDefaultValue.put(GameData_GreenAppleLevel, 1f);
-    	sGameDataDefaultValue.put(GameData_GravityAppleLevel, 1f);
-    	sGameDataDefaultValue.put(GameData_StrongBowCount, 100f); // TODO for test count
-    	sGameDataDefaultValue.put(GameData_WeakBowCount, 100f);
-    	sGameDataDefaultValue.put(GameData_Gold, 0f);
+    	sGameDataDefaultValue.put(GameData_GoldenAppleLevel, 0f);
+    	sGameDataDefaultValue.put(GameData_GreenAppleLevel, 0f);
+    	sGameDataDefaultValue.put(GameData_GravityAppleLevel, 0f);
+    	sGameDataDefaultValue.put(GameData_StrongBowCount, 5f);
+    	sGameDataDefaultValue.put(GameData_WeakBowCount, 5f);
+    	sGameDataDefaultValue.put(GameData_Gold, 99000f); // TODO
+    	sGameDataDefaultValue.put(GameData_ShowAD, 1f);
     }
 }

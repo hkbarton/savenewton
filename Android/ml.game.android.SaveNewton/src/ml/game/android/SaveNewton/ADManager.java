@@ -32,6 +32,9 @@ public class ADManager {
 	}
 	
 	public static AdView loadAD(Context context, ViewGroup adContainer){
+		if (DataAccess.GDShowAD<1){
+			return null;
+		}
 		AdView adView = new AdView(context);
 		adView.setAdUnitId(context.getString(R.string.adUnitID));
 		adView.setAdSize(AdSize.BANNER);
@@ -45,18 +48,27 @@ public class ADManager {
 	}
 	
 	public static AdView loadAD(Activity activity, int adViewID){
+		if (DataAccess.GDShowAD<1){
+			return null;
+		}
 		AdView adView = (AdView)activity.findViewById(adViewID);
 		adView.loadAd(buildRequest(activity));
 		return adView;
 	}
 	
 	public static void hideAdDelay(final AdView adView, int delaySeconds){
+		if (DataAccess.GDShowAD<1){
+			return;
+		}
 		HideADAction hideAction = new HideADAction(adView);
 		adView.setTag(hideAction);
 		adView.postDelayed(hideAction, delaySeconds * 1000);
 	}
 	
 	public static void refreshAD(AdView adView){
+		if (DataAccess.GDShowAD<1 || adView==null){
+			return;
+		}
 		Object tagAction = adView.getTag();
 		if (tagAction!=null){
 			HideADAction hideAction = (HideADAction)tagAction;

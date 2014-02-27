@@ -119,7 +119,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement(688182, "Skill Master"){
+                new LocalAchievement(688183, "Skill Master"){
                     @Override public boolean unlock(StatData data){
                         if (data.ContinueWeakBowShootCount>=SkillMaster_ContinueHitCount){
                             return true;
