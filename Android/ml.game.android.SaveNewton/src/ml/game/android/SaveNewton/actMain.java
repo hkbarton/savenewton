@@ -1,5 +1,7 @@
 package ml.game.android.SaveNewton;
 
+import ml.game.android.SaveNewton.BillingManager.ResultCallback;
+
 import com.google.android.gms.ads.AdView;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
@@ -39,6 +41,13 @@ public class actMain extends BaseGameActivity {
         public void handleMessage(Message msg){
             switch(msg.what){
             case LoadEvent_FinishLoadResource:
+            	BillingManager.isRemovedAD(actMain.this, new ResultCallback(){
+                	@Override public void onResult(Object result){
+                		if (result!=null && ((Boolean)result)){
+                			ADManager.removeAD(mAdView);
+                		}
+                	}
+                });
                 finishLoadResource();
                 break;
             case LoadEvent_ShowAD:
@@ -77,6 +86,7 @@ public class actMain extends BaseGameActivity {
     public void onStop(){
         super.onStop();
         AudioResource.stopBGM(AudioResource.BGMID_Title);
+        BillingManager.destoryResource(this);
     }
     
     @Override

@@ -56,6 +56,12 @@ public class ADManager {
 		return adView;
 	}
 	
+	public static void removeAD(final AdView adView){
+		if (adView!=null){
+			adView.setVisibility(View.GONE);
+		}
+	}
+	
 	public static void hideAdDelay(final AdView adView, int delaySeconds){
 		if (DataAccess.GDShowAD<1){
 			return;

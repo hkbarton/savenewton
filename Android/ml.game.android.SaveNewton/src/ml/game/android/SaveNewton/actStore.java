@@ -650,4 +650,10 @@ public class actStore extends FragmentActivity{
 		super.onStop();
 		DataAccess.saveAllGameData(this);
 	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		BillingManager.destoryResource(this);
+	}
 }
