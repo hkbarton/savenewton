@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import com.google.android.gms.ads.AdView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -28,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
+import android.widget.Toast;
 
 public class actStore extends FragmentActivity{
 	private static class GoldCountView extends LinearLayout{
@@ -375,7 +379,7 @@ public class actStore extends FragmentActivity{
 		public boolean IsValidate;
 		public SpannableStringBuilder CostStr;
 		public boolean IsCountableOrder;
-		private boolean mIsDollarOrder;
+		public BillingManager.Product RelatedBillProduct;
 		
 		private static HashMap<String, String> OrderDescription = new HashMap<String, String>();
 		static{
@@ -411,8 +415,17 @@ public class actStore extends FragmentActivity{
 			return "";
 		}
 		
+		public boolean isBillOrder(){
+			if (RelatedGameData.equals(DataAccess.GameData_DollarToGold1)
+					|| RelatedGameData.equals(DataAccess.GameData_DollarToGold2)
+					|| RelatedGameData.equals(DataAccess.GameData_DollarToGold3)
+					|| RelatedGameData.equals(DataAccess.GameData_ShowAD)){
+				return true;
+			}
+			return false;
+		}
+		
 		public void refresh(){
-			mIsDollarOrder = false;
 			IsValidate = false;
 			IsCountableOrder = false;
 			CostStr = new SpannableStringBuilder();
@@ -428,14 +441,8 @@ public class actStore extends FragmentActivity{
 					|| RelatedGameData.equals(DataAccess.GameData_WeakBowCount)){
 				cost = DataAccess.getBowWeaponCost(Count);
 				IsCountableOrder = true;
-			}else if (RelatedGameData.equals(DataAccess.GameData_DollarToGold1)
-					|| RelatedGameData.equals(DataAccess.GameData_DollarToGold2)
-					|| RelatedGameData.equals(DataAccess.GameData_DollarToGold3)
-					|| RelatedGameData.equals(DataAccess.GameData_ShowAD)){
-				mIsDollarOrder = true;
-				// TODO
 			}
-			if (!mIsDollarOrder){
+			if (!isBillOrder()){
 				int spanStart = CostStr.length() - 1;
 				CostStr.append(String.valueOf(cost));
 				if (DataAccess.GDGold>cost && cost>0){
@@ -447,11 +454,21 @@ public class actStore extends FragmentActivity{
 							CostStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				}
 			}else{
-				// TODO append dollar value
+				if (sBillProducts!=null && sBillProducts.size()>0){
+					for(BillingManager.Product product : sBillProducts){
+						if (product.ProductID==RelatedGameData){
+							CostStr.append(product.ProductPriceStr);
+							IsValidate = true;
+							break;
+						}
+					}
+				}else{
+					CostStr.append("Loading...");
+				}
 			}
 		}
 		
-		public void executeOrder(){
+		public void executeOrder(final Context context){
 			if (IsValidate){
 				if (RelatedGameData.equals(DataAccess.GameData_GoldenAppleLevel)
 						|| RelatedGameData.equals(DataAccess.GameData_GreenAppleLevel)
@@ -461,11 +478,27 @@ public class actStore extends FragmentActivity{
 						|| RelatedGameData.equals(DataAccess.GameData_WeakBowCount)){
 					DataAccess.buyBowWeapon(RelatedGameData, Count);
 					Count = 0;
-				}else if (RelatedGameData.equals(DataAccess.GameData_DollarToGold1)
-						|| RelatedGameData.equals(DataAccess.GameData_DollarToGold2)
-						|| RelatedGameData.equals(DataAccess.GameData_DollarToGold3)
-						|| RelatedGameData.equals(DataAccess.GameData_ShowAD)){
-					// TODO
+				}else if (isBillOrder()){
+					RelatedBillProduct = new BillingManager.Product(RelatedGameData);
+					BillingManager.purchaseItem(context, RelatedBillProduct, 
+					new BillingManager.ResultCallback() {
+						// only handle error here
+						@Override public void onResult(Exception ex, Object result){
+							if (ex==null){
+								return;
+							}
+							String errMessage = "Cann't finish this purchase, please try again later.";
+							if (ex instanceof BillingManager.BillingException){
+								errMessage = ex.getMessage();
+								BillingManager.BillingException billException = (BillingManager.BillingException)ex;
+								if (billException.ErrorCode==BillingManager.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED
+										&& RelatedGameData.equals(DataAccess.GameData_ShowAD)){
+									((actStore)context).removeRemoveADStoreItem();
+								}
+							}
+							Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show();
+						}
+					});
 				}
 				refresh();
 			}
@@ -480,6 +513,9 @@ public class actStore extends FragmentActivity{
 	private TextView mTxtCost;
 	private CountPickerView mCountPicker;
 	private Order mCurOrder;
+	private ViewGroup mStoreItemContainer;
+	private ViewStoreItem mRemoveADStoreItem;
+	private static List<BillingManager.Product> sBillProducts;
 	
 	private ViewStoreItem.OnSelectListener mOnItemSelected = new ViewStoreItem.OnSelectListener() {
 		@Override
@@ -549,13 +585,64 @@ public class actStore extends FragmentActivity{
 		}
 	}
 	
+	private void removeRemoveADStoreItem(){
+		if (mRemoveADStoreItem!=null){
+			mItemViews.remove(mRemoveADStoreItem);
+			mStoreItemContainer.removeView(mRemoveADStoreItem);
+			ADManager.removeAD(mADView);
+			boolean hasSelectedStoreItem = false;
+			for(ViewStoreItem storeItem : mItemViews){
+				if (storeItem.IsSelected){
+					hasSelectedStoreItem = true;
+					break;
+				}
+			}
+			if (!hasSelectedStoreItem){
+				mItemViews.get(mItemViews.size()-1).select(); // select last one
+			}
+		}
+	}
+	
+	private void checkIfOwnedRemoveADItem(){
+		BillingManager.isRemovedAD(this, new BillingManager.ResultCallback() {
+			@Override public void onResult(Object result){
+				if (result!=null && (Boolean)result){
+					removeRemoveADStoreItem();
+				}
+			}
+		});
+	}
+	
+	private void queryBillItem(){
+		ArrayList<String> billItemIDs = new ArrayList<String>();
+		billItemIDs.add(DataAccess.GameData_DollarToGold1);
+		billItemIDs.add(DataAccess.GameData_DollarToGold2);
+		billItemIDs.add(DataAccess.GameData_DollarToGold3);
+		billItemIDs.add(DataAccess.GameData_ShowAD);
+		BillingManager.getItemsInfo(this, billItemIDs, new BillingManager.ResultCallback() {
+			@SuppressWarnings("unchecked")
+			@Override public void onResult(Object result){
+				if (result!=null){
+					sBillProducts = (List<BillingManager.Product>)result;
+					if (mCurOrder!=null && mCurOrder.isBillOrder() && !mCurOrder.IsValidate){
+						mCurOrder.refresh();
+						updateDetailPanelInfo(false);
+					}
+				}
+			}
+		});
+	}
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.store);
+        checkIfOwnedRemoveADItem();
+        queryBillItem();
         mADView = ADManager.loadAD(this, (ViewGroup)(this.findViewById(R.id.actStore_ADPanel)));
         // Add Store Item
-        ViewGroup storeItemContainer = (ViewGroup)this.findViewById(R.id.actStore_StoreItem);
+        mStoreItemContainer = (ViewGroup)this.findViewById(R.id.actStore_StoreItem);
+        ViewGroup storeItemContainer = mStoreItemContainer;
         mItemViews = new ArrayList<ViewStoreItem>();
         ViewStoreItem firstItem = addStoreItem(this, DataAccess.GameData_GoldenAppleLevel, storeItemContainer, false);
         mItemViews.add(firstItem);
@@ -566,7 +653,10 @@ public class actStore extends FragmentActivity{
         mItemViews.add(addStoreItem(this, DataAccess.GameData_DollarToGold1, storeItemContainer, false));
         mItemViews.add(addStoreItem(this, DataAccess.GameData_DollarToGold2, storeItemContainer, false));
         mItemViews.add(addStoreItem(this, DataAccess.GameData_DollarToGold3, storeItemContainer, false));
-        mItemViews.add(addStoreItem(this, DataAccess.GameData_ShowAD, storeItemContainer, true));
+        if (DataAccess.GDShowAD>0){
+        	mRemoveADStoreItem = addStoreItem(this, DataAccess.GameData_ShowAD, storeItemContainer, true);
+        	mItemViews.add(mRemoveADStoreItem);
+        }
         // ====== Init Detail Panel
         RelativeLayout opPanel = (RelativeLayout)this.findViewById(R.id.actStore_OpPanel);
         float density = this.getResources().getDisplayMetrics().density;
@@ -628,7 +718,7 @@ public class actStore extends FragmentActivity{
 			@Override
 			public void onClick(View v) {
 				if (mCurOrder!=null && mCurOrder.IsValidate){
-					mCurOrder.executeOrder();
+					mCurOrder.executeOrder(actStore.this);
 					refreshSelectedStoreItem();
 					mGoldCntView.refresh();
 					updateDetailPanelInfo(true);
@@ -637,6 +727,35 @@ public class actStore extends FragmentActivity{
 		});
         // default select first item 
         firstItem.select();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+	   if (requestCode == BillingManager.ActivityCode_Purchase) {           
+	      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+	      String purchaseDataStr = data.getStringExtra("INAPP_PURCHASE_DATA");
+	      if (resultCode==RESULT_OK && responseCode==BillingManager.BILLING_RESPONSE_RESULT_OK) {
+	         try {
+	            JSONObject purchaseData = new JSONObject(purchaseDataStr);
+	            String productID = purchaseData.getString("productId");
+	            String productToken = purchaseData.getString("developerPayload");
+	            String purchaseToken = purchaseData.getString("purchaseToken");
+	            if (mCurOrder!=null && mCurOrder.RelatedBillProduct!=null
+	            	&& mCurOrder.RelatedBillProduct.ProductID.equals(productID)
+	            	&& mCurOrder.RelatedBillProduct.Token.equals(productToken)){
+	            	// purchase success, consume this product
+	            	DataAccess.buyBilledData(this, mCurOrder.RelatedGameData);
+	            	if (mCurOrder.RelatedGameData.equalsIgnoreCase(DataAccess.GameData_ShowAD)){
+	            		removeRemoveADStoreItem();
+	            		Toast.makeText(this, "Thanks for your support, AD removed!", Toast.LENGTH_LONG).show();
+	            	}
+	            	updateDetailPanelInfo(false);
+	            	BillingManager.consumeItem(this, purchaseToken, null);
+	            }
+	          }
+	          catch (Exception e) { }
+	      }
+	   }
 	}
 	
 	@Override

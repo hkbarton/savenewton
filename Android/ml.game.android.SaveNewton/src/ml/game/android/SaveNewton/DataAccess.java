@@ -382,6 +382,19 @@ public class DataAccess{
     	}
     }
     
+    public static void buyBilledData(Context context, String gameDataKey){
+    	if (gameDataKey.equals(GameData_DollarToGold1)){
+    		GDGold += GameData_DollarToGold1Value;
+    	}else if (gameDataKey.equals(GameData_DollarToGold2)){
+    		GDGold += GameData_DollarToGold2Value;
+    	}else if (gameDataKey.equals(GameData_DollarToGold3)){
+    		GDGold += GameData_DollarToGold3Value;
+    	}else if (gameDataKey.equals(GameData_ShowAD)){
+    		GDShowAD = 0;
+    	}
+    	saveAllGameData(context);
+    }
+    
     public static void increaseStrongBowCountFromApple(){
     	if (GDStrongBowCount < GameData_MaxWeaponCount){
     		GDStrongBowCount += GameData_WeaponCountInOneApple;

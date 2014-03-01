@@ -86,13 +86,13 @@ public class actMain extends BaseGameActivity {
     public void onStop(){
         super.onStop();
         AudioResource.stopBGM(AudioResource.BGMID_Title);
-        BillingManager.destoryResource(this);
     }
     
     @Override
     public void onDestroy(){
         super.onDestroy();
         AudioResource.releaseResource();
+        BillingManager.destoryResource(this);
     }
     
     private void initLayout(){
@@ -377,6 +377,8 @@ public class actMain extends BaseGameActivity {
     private OnClickListener menuPlay_Click = new OnClickListener(){
         @Override
         public void onClick(View v) {
+        	// before game start, release billing service resource
+        	BillingManager.destoryResource(actMain.this);
             Intent intent = new Intent(actMain.this, actGameView.class);
             actMain.this.startActivity(intent);
         }
