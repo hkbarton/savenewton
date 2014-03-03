@@ -24,6 +24,10 @@ import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.*;
+import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.games.achievement.OnAchievementUpdatedListener;
+import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
+import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 public class actGameView extends BaseGameActivity{
@@ -376,7 +380,6 @@ public class actGameView extends BaseGameActivity{
         @Override
         public void onClick(View v) {
         	actGameView.this.beginUserInitiatedSignIn();
-        	// TODO post score and achievement online
         }
     };
 
@@ -386,8 +389,48 @@ public class actGameView extends BaseGameActivity{
 		// do nothing here, use default action that BaseGameUtils provide
 	}
 
+	private int mAchievementSubmitCnt = 0;
+	private int mAchievementFailCnt = 0;
 	@Override
 	public void onSignInSucceeded() {
-		// TODO post score and achievement online
+		// post score
+		mAchievementSubmitCnt = 0;
+		mAchievementFailCnt = 0;
+		final GamesClient client = this.getGamesClient();
+		client.submitScoreImmediate(new OnScoreSubmittedListener(){
+			@Override public void onScoreSubmitted(int statusCode,
+					SubmitScoreResult result) {
+				if (statusCode==GamesClient.STATUS_OK){
+					// post score succeed, post achievement now
+					final String[] localUnlockIDs = DataAccess.getLocalUnlockAchievementIDs(actGameView.this);
+					if (localUnlockIDs!=null && localUnlockIDs.length>0){
+						for (int i=0;i<localUnlockIDs.length;i++){
+							client.unlockAchievementImmediate(new OnAchievementUpdatedListener(){
+								@Override public void onAchievementUpdated(int statusCode, String achievementId) {
+									mAchievementSubmitCnt++;
+									if (statusCode!=GamesClient.STATUS_OK){
+										mAchievementFailCnt++;
+									}
+									if (mAchievementSubmitCnt==localUnlockIDs.length){
+										if (mAchievementFailCnt > 0){ // part failed
+											Toast.makeText(actGameView.this, 
+												actGameView.this.getString(R.string.tipSubmitAchievementOnlineFail), 
+												Toast.LENGTH_LONG).show();
+										}
+										// TODO show dialog , ask if jump to online leader board
+									}
+								}
+							}, localUnlockIDs[i]);
+						}
+					}else{
+						// TODO show dialog , ask if jump to online leader board
+					}
+				}else{
+					Toast.makeText(actGameView.this, 
+						actGameView.this.getString(R.string.tipSubmitScoreAndAchievementOnlineFail), 
+						Toast.LENGTH_LONG).show();
+				}
+			}
+		}, this.getString(R.string.playLeaderboardID), AchievementMgt.StatData.Score);
 	}
 }

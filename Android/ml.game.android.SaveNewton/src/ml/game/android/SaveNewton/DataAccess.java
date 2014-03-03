@@ -53,7 +53,7 @@ public class DataAccess{
                 "name TEXT NOT NULL," + 
                 "score INTEGER NOT NULL);");
         db.execSQL("CREATE TABLE IF NOT EXISTS achievement(" + 
-                "aid INTEGER NOT NULL PRIMARY KEY," + 
+                "aid TEXT NOT NULL PRIMARY KEY," + 
                 "status INTEGER NOT NULL DEFAULT 0);");
         db.execSQL("CREATE TABLE IF NOT EXISTS gamedata(" + 
                 "key TEXT NOT NULL PRIMARY KEY," + 
@@ -142,14 +142,14 @@ public class DataAccess{
         return result;
     }
     
-    public static List<Integer> getUnlockAchievementIDs(Context context){
-        List<Integer> result = new ArrayList<Integer>();
+    public static List<String> getUnlockAchievementIDs(Context context){
+        List<String> result = new ArrayList<String>();
         SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
         Cursor cursor = db.query("achievement", new String[]{"aid"}, "status<>?", 
                 new String[]{String.valueOf(AchievementMgt.AchievementStatus_Locked)}, null, null, null);
         if (cursor!=null && cursor.moveToFirst()){
             do{
-                result.add(cursor.getInt(0));
+                result.add(cursor.getString(0));
             }while(cursor.moveToNext());
         }
         cursor.close();
@@ -157,7 +157,7 @@ public class DataAccess{
         return result;
     }
     
-    public static void unlockAchievementLocal(Context context, int aid){
+    public static void unlockAchievementLocal(Context context, String aid){
         SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
         ContentValues data = new ContentValues();
         data.put("aid", aid);
@@ -166,16 +166,16 @@ public class DataAccess{
         db.close();
     }
     
-    public static int[] getLocalUnlockAchievementIDs(Context context){
-        int[] result = null;
+    public static String[] getLocalUnlockAchievementIDs(Context context){
+        String[] result = null;
         SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
         Cursor cursor = db.query("achievement", new String[]{"aid"}, "status=?", 
                 new String[]{String.valueOf(AchievementMgt.AchievementStatus_UnLockLocal)}, null, null, null);
         if (cursor!=null && cursor.getCount()>0 && cursor.moveToFirst()){
-            result = new int[cursor.getCount()];
+            result = new String[cursor.getCount()];
             int i=0;
             do{
-                result[i] = cursor.getInt(0);
+                result[i] = cursor.getString(0);
                 i++;
             }while(cursor.moveToNext());
         }
@@ -184,7 +184,7 @@ public class DataAccess{
         return result;
     }
     
-    public static void unlockAchievementOnline(Context context, int aid){
+    public static void unlockAchievementOnline(Context context, String aid){
         SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
         ContentValues data = new ContentValues();
         data.put("aid", aid);

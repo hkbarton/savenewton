@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_id">874679711322</string>
+    <string name="playLeaderboardID">CgkI2uzkt7oZEAIQAg</string>
     <string name="adUnitID">a14cb5bcb0ef2ba</string>
     <string name="app_name">Save Newton</string>
     <string name="ad_keywords">game,mobile,action,application,video,apple</string>   
@@ -25,6 +26,6 @@
     <string name="infoAppleNote4">Special apple, it\'s score equal with normal apple, but it can make the special gravity to let every apple fall slowly in few seconds.</string>
     <string name="infoGameNote2">Use these powers to earn highest score! Post score online to compete with other players all over the world!\n\nBe careful! DO NOT hit Newton!</string>
     <string name="tipUnlockAchievement"  formatted="false">You have unlock achievement %s. You can post it online later.</string>
-    <string name="tipUnlockSomeAOnlineFail">Some of achievement unlock failed online, you can retry later.</string>
-    <string name="tipUnlockAllAOnlineFail">All of achievement unlock failed online, you can retry later.</string>
+    <string name="tipSubmitScoreAndAchievementOnlineFail">Submit score and achievement online failed, pelase retry later.</string>
+    <string name="tipSubmitAchievementOnlineFail">Some of achievements are submit failed, pelase retry later.</string>
 </resources>
