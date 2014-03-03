@@ -11,7 +11,7 @@
 	    android:orientation="vertical">
 	    <TextView android:layout_width="fill_parent"
 	        android:layout_height="wrap_content" 
-	        android:textSize="18dp"
+	        android:textSize="18sp"
 	        android:text="@string/infoGameNote1"/>
 	    <RelativeLayout android:layout_width="fill_parent"
 	       android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
 	            android:layout_toRightOf="@id/diagInfo_imgApple1"
 	            android:layout_alignTop="@id/diagInfo_imgApple1"
 	            android:layout_marginLeft="10dp"
-	            android:textSize="18dp"
+	            android:textSize="18sp"
 	            android:text="@string/infoAppleNote1" />
 	       <View android:id="@+id/diagInfo_imgApple2"
                 android:layout_width="20dp" android:layout_height="20dp"
@@ -41,7 +41,7 @@
                 android:layout_toRightOf="@id/diagInfo_imgApple2"
                 android:layout_alignTop="@id/diagInfo_imgApple2"
                 android:layout_marginLeft="10dp"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:text="@string/infoAppleNote2" />
             <View android:id="@+id/diagInfo_imgApple3"
                 android:layout_width="20dp" android:layout_height="20dp"
@@ -55,7 +55,7 @@
                 android:layout_toRightOf="@id/diagInfo_imgApple3"
                 android:layout_alignTop="@id/diagInfo_imgApple3"
                 android:layout_marginLeft="10dp"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:text="@string/infoAppleNote3" />   
              <View android:id="@+id/diagInfo_imgApple4"
                 android:layout_width="20dp" android:layout_height="20dp"
@@ -68,12 +68,12 @@
                 android:layout_toRightOf="@id/diagInfo_imgApple4"
                 android:layout_alignTop="@id/diagInfo_imgApple4"
                 android:layout_marginLeft="10dp"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:text="@string/infoAppleNote4" /> 
 	    </RelativeLayout>
 	    <TextView android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="18dp"
+	        android:textSize="18sp"
 	        android:text="@string/infoGameNote2" />
 	</LinearLayout>
 </ScrollView>

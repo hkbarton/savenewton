@@ -433,7 +433,7 @@ public class DataAccess{
     	sGameDataDefaultValue.put(GameData_GravityAppleLevel, 0f);
     	sGameDataDefaultValue.put(GameData_StrongBowCount, 5f);
     	sGameDataDefaultValue.put(GameData_WeakBowCount, 5f);
-    	sGameDataDefaultValue.put(GameData_Gold, 99000f); // TODO
+    	sGameDataDefaultValue.put(GameData_Gold, 0f);
     	sGameDataDefaultValue.put(GameData_ShowAD, 1f);
     }
 }

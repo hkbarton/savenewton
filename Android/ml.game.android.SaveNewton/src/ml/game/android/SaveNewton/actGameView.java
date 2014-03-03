@@ -2,6 +2,7 @@ package ml.game.android.SaveNewton;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,7 +40,8 @@ public class actGameView extends BaseGameActivity{
     private AdView mAdView;
     private Animation[] mMenuInAnimations, mMenuOutAnimations;
     
-    private Handler mGameEventHandler = new Handler(){
+    @SuppressLint("HandlerLeak")
+	private Handler mGameEventHandler = new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
@@ -388,6 +390,34 @@ public class actGameView extends BaseGameActivity{
 	public void onSignInFailed() {
 		// do nothing here, use default action that BaseGameUtils provide
 	}
+	
+	private void showGotoOnlineDiag(){
+		AlertDialog.Builder ab = new AlertDialog.Builder(this);
+		ab.setTitle("View online result");
+		ab.setMessage("Do you want view leaderboard or achievements online now?");
+		ab.setPositiveButton("Leaderboard", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				startActivityForResult(getGamesClient().getLeaderboardIntent(
+					actGameView.this.getString(R.string.playLeaderboardID)), 0);
+			}
+		});
+		ab.setNeutralButton("Achievements", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				startActivityForResult(getGamesClient().getAchievementsIntent(), 0);
+			}
+		});
+		ab.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		ab.show();
+	}
 
 	private int mAchievementSubmitCnt = 0;
 	private int mAchievementFailCnt = 0;
@@ -417,13 +447,13 @@ public class actGameView extends BaseGameActivity{
 												actGameView.this.getString(R.string.tipSubmitAchievementOnlineFail), 
 												Toast.LENGTH_LONG).show();
 										}
-										// TODO show dialog , ask if jump to online leader board
+										showGotoOnlineDiag();
 									}
 								}
 							}, localUnlockIDs[i]);
 						}
 					}else{
-						// TODO show dialog , ask if jump to online leader board
+						showGotoOnlineDiag();
 					}
 				}else{
 					Toast.makeText(actGameView.this, 

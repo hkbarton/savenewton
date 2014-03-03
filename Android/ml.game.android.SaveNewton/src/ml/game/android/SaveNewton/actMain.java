@@ -5,6 +5,7 @@ import ml.game.android.SaveNewton.BillingManager.ResultCallback;
 import com.google.android.gms.ads.AdView;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,8 @@ public class actMain extends BaseGameActivity {
     private Animation[] mMenuInAnimations, mMenuOutAnimations;
     private AdView mAdView;
     
-    private Handler mLoadEventHandler = new Handler(){
+    @SuppressLint("HandlerLeak")
+	private Handler mLoadEventHandler = new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
@@ -57,7 +59,8 @@ public class actMain extends BaseGameActivity {
         }
     };
     
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GameResource.preInit(this.getWindowManager().getDefaultDisplay().getWidth(), 
@@ -265,7 +268,8 @@ public class actMain extends BaseGameActivity {
             btnMenu3.setOnClickListener(menuScore_Click);
             btnMenu4.setOnClickListener(menuOnline_Click);
         }else if (mMenuType==MenuType_Online){
-        	// TODO
+        	btnMenu2.setOnClickListener(menuOnlineLeaderboard_Click);
+            btnMenu3.setOnClickListener(menuOnlineAchievement_Click);
         	btnMenu4.setOnClickListener(menuToMainMenu_Click);
         }
     }
@@ -411,6 +415,21 @@ public class actMain extends BaseGameActivity {
         @Override
         public void onClick(View v) {
             toMainMenu();
+        }
+    };
+    
+    private OnClickListener menuOnlineLeaderboard_Click = new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+        	startActivityForResult(getGamesClient().getLeaderboardIntent(
+				actMain.this.getString(R.string.playLeaderboardID)), 0);
+        }
+    };
+    
+    private OnClickListener menuOnlineAchievement_Click = new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+        	startActivityForResult(getGamesClient().getAchievementsIntent(), 0);
         }
     };
 

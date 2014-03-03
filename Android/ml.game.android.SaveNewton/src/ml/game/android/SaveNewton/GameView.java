@@ -10,6 +10,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private GameMainThread mGameThread;
     private GameLogic mGameLogic;
     
+    public GameView(Context context){
+    	super(context);
+    }
+    
     public GameView(Context context, Handler gameEventHandler) {
         super(context);
         this.getHolder().addCallback(this);
