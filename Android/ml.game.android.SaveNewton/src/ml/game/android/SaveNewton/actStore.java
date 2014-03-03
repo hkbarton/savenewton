@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -639,7 +640,19 @@ public class actStore extends FragmentActivity{
         setContentView(R.layout.store);
         checkIfOwnedRemoveADItem();
         queryBillItem();
-        mADView = ADManager.loadAD(this, (ViewGroup)(this.findViewById(R.id.actStore_ADPanel)));
+        RelativeLayout adPanel = (RelativeLayout)this.findViewById(R.id.actStore_ADPanel);
+        mADView = ADManager.loadAD(this, adPanel);
+        // add close button
+        ImageView imgBtnClose = new ImageView(this);
+        imgBtnClose.setScaleType(ScaleType.FIT_CENTER);
+        imgBtnClose.setImageResource(R.drawable.btnclose);
+        RelativeLayout.LayoutParams imgBtnCloseLy = new RelativeLayout.LayoutParams(
+                GameResource.SmallBtnSize, GameResource.SmallBtnSize);
+        imgBtnCloseLy.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        imgBtnCloseLy.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        imgBtnCloseLy.setMargins(0, 5, 10, 0);
+        adPanel.addView(imgBtnClose, imgBtnCloseLy);
+        imgBtnClose.setOnClickListener(btnClose_Click);
         // Add Store Item
         mStoreItemContainer = (ViewGroup)this.findViewById(R.id.actStore_StoreItem);
         ViewGroup storeItemContainer = mStoreItemContainer;
@@ -775,4 +788,11 @@ public class actStore extends FragmentActivity{
 		super.onDestroy();
 		BillingManager.destoryResource(this);
 	}
+	
+	private OnClickListener btnClose_Click = new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            actStore.this.finish();
+        }
+    };
 }
