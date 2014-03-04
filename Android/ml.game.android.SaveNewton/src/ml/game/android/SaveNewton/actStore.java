@@ -762,6 +762,7 @@ public class actStore extends FragmentActivity{
 	            		removeRemoveADStoreItem();
 	            		Toast.makeText(this, "Thanks for your support, AD removed!", Toast.LENGTH_LONG).show();
 	            	}
+	            	mGoldCntView.refresh();
 	            	updateDetailPanelInfo(false);
 	            	BillingManager.consumeItem(this, purchaseToken, null);
 	            }
