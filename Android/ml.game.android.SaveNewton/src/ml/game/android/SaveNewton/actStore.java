@@ -457,7 +457,7 @@ public class actStore extends FragmentActivity{
 			}else{
 				if (sBillProducts!=null && sBillProducts.size()>0){
 					for(BillingManager.Product product : sBillProducts){
-						if (product.ProductID==RelatedGameData){
+						if (product.ProductID.equals(RelatedGameData)){
 							CostStr.append(product.ProductPriceStr);
 							IsValidate = true;
 							break;

@@ -25,8 +25,8 @@ public class AchievementMgt{
     private static final int SkillMaster_ContinueHitCount = 30;
     // Apple Defender, hide achievement, continue miss apple 50 times in One Round
     private static final int AppleDefender_MissCount = 50;
-    // Scientist Killer, hide achievement, kill Newton 100 times
-    private static final int ScientistKiller_Count = 100;
+    // Scientist Killer, hide achievement, kill Newton 30 times
+    private static final int ScientistKiller_Count = 30;
     
     public static class StatData{
         // Round Stat.
@@ -63,7 +63,7 @@ public class AchievementMgt{
     
     public static void initAchievements(){
         Achievements = new LocalAchievement[]{
-                new LocalAchievement("CgkI2uzkt7oZEAIQAw", "Junior Shooter"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQAQ", "Junior Shooter"){
                     @Override public boolean unlock(StatData data){
                         if (data.Score>=JuniorShooter_Score){
                             return true;
@@ -71,7 +71,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQBA", "Senior Shooter"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQAg", "Senior Shooter"){
                     @Override public boolean unlock(StatData data){
                         if (data.Score>=SeniorShooter_Score){
                             return true;
@@ -79,7 +79,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQBQ", "Shooting Master"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQAw", "Shooting Master"){
                     @Override public boolean unlock(StatData data){
                         if (data.Score>=ShootingMaster_Score){
                             return true;
@@ -87,7 +87,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQBg", "Compote"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQBA", "Compote"){
                     @Override public boolean unlock(StatData data){
                         if (data.ContinueShootCount>=Compote_HitCount){
                             return true;
@@ -95,7 +95,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQBw", "Fruit Feast"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQBQ", "Fruit Feast"){
                     @Override public boolean unlock(StatData data){
                         if (data.ContinueShootCount>=FruitFeast_HitCount){
                             return true;
@@ -103,7 +103,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQCA", "Apple Killer"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQBg", "Apple Killer"){
                     @Override public boolean unlock(StatData data){
                         if (data.ContinueShootCount>=AppleKiller_HitCount){
                             return true;
@@ -111,7 +111,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQCQ", "Skill Student"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQBw", "Skill Student"){
                     @Override public boolean unlock(StatData data){
                         if (data.WeakBowShootCount>=SkillStudent_HitCount){
                             return true;
@@ -119,7 +119,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQCg", "Skill Master"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQCA", "Skill Master"){
                     @Override public boolean unlock(StatData data){
                         if (data.ContinueWeakBowShootCount>=SkillMaster_ContinueHitCount){
                             return true;
@@ -127,7 +127,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQCw", "Apple Defender"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQCQ", "Apple Defender"){
                     @Override public boolean unlock(StatData data){
                         if (data.ContinueMissCount>=AppleDefender_MissCount){
                             return true;
@@ -135,7 +135,7 @@ public class AchievementMgt{
                         return false;
                     }
                 },
-                new LocalAchievement("CgkI2uzkt7oZEAIQDA", "Scientist Killer"){
+                new LocalAchievement("CgkI-cSrmt8BEAIQCg", "Scientist Killer"){
                     @Override public boolean unlock(StatData data){
                         if (data.KillNewtonTimes>=ScientistKiller_Count){
                             return true;
