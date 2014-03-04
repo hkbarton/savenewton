@@ -446,7 +446,7 @@ public class actStore extends FragmentActivity{
 			if (!isBillOrder()){
 				int spanStart = CostStr.length() - 1;
 				CostStr.append(String.valueOf(cost));
-				if (DataAccess.GDGold>cost && cost>0){
+				if (DataAccess.GDGold>=cost && cost>0){
 					CostStr.setSpan(new ForegroundColorSpan(Color.YELLOW), spanStart, 
 							CostStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 					IsValidate = true;

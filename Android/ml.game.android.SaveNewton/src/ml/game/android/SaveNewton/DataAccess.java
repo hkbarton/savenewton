@@ -350,7 +350,7 @@ public class DataAccess{
     
     public static void levelUp(String gameDataKey){
     	int cost = getNextLevelCost(gameDataKey);
-    	if (cost>0 && GDGold>cost){
+    	if (cost>0 && GDGold >= cost){
     		GDGold = GDGold - cost;
 	    	if (gameDataKey.equals(GameData_GoldenAppleLevel)){
 	    		GDGoldenAppleLevel++;
@@ -371,7 +371,7 @@ public class DataAccess{
     
     public static void buyBowWeapon(String gameDataKey, int count){
     	int cost = getBowWeaponCost(count);
-    	if (cost>0 && GDGold>cost){
+    	if (cost>0 && GDGold >= cost){
     		if (gameDataKey.equals(GameData_StrongBowCount)){
     			GDGold = GDGold - cost;
     			GDStrongBowCount += count;
