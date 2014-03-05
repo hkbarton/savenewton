@@ -761,10 +761,11 @@ public class actStore extends FragmentActivity{
 	            	if (mCurOrder.RelatedGameData.equalsIgnoreCase(DataAccess.GameData_ShowAD)){
 	            		removeRemoveADStoreItem();
 	            		Toast.makeText(this, "Thanks for your support, AD removed!", Toast.LENGTH_LONG).show();
+	            	}else{
+	            		BillingManager.consumeItem(this, purchaseToken, null);
 	            	}
 	            	mGoldCntView.refresh();
 	            	updateDetailPanelInfo(false);
-	            	BillingManager.consumeItem(this, purchaseToken, null);
 	            }
 	          }
 	          catch (Exception e) { }

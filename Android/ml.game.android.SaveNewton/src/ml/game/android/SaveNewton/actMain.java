@@ -76,6 +76,10 @@ public class actMain extends BaseGameActivity {
         if (mLoadComplete && DataAccess.Pref_IsSound){
             AudioResource.playBGM(this, AudioResource.BGMID_Title);
         }
+        // check if already remove AD
+        if (DataAccess.GDShowAD < 1){
+        	ADManager.removeAD(mAdView);
+        }
     }
     
     
