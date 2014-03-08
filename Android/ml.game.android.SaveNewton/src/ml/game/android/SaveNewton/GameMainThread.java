@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.view.SurfaceHolder;
 
 public class GameMainThread extends Thread{
@@ -60,19 +61,13 @@ public class GameMainThread extends Thread{
             if (canvas==null){ // lock canvas fail
             	return;
             }
-            // draw background
-            int skyBackLeftPos = 0;
-            for (int i=0;i<GameResource.GameStageSkyBackDrawCount;i++){
-                canvas.drawBitmap(GameResource.GameStage_Back0, 
-                        skyBackLeftPos, GameResource.GameStageSkyBackTopPos, null);
-                skyBackLeftPos += GameResource.GameStageSkyBackWidth;
-            }
+            canvas.drawColor(0, Mode.CLEAR);
+            // draw background cloud, background should be drawn on background view to improve performance
             canvas.drawBitmap(GameResource.GameStage_Cloud, 
                     mGameLogic.CloudLeftPos, mGameLogic.CloudTopPos1, null);
             canvas.drawBitmap(GameResource.GameStage_Cloud, 
                     mGameLogic.CloudLeftPos + GameResource.GameStageCloudDis, 
                     mGameLogic.CloudTopPos2, null);
-            canvas.drawBitmap(GameResource.GameStage_Back1, 0, 0, null);
             // draw arrow
             for (int i=0;i<mGameLogic.Arrows.size();i++){
                 Arrow arrow = mGameLogic.Arrows.get(i);

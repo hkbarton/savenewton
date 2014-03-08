@@ -1,6 +1,7 @@
 package ml.game.android.SaveNewton;
 
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -16,7 +17,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     
     public GameView(Context context, Handler gameEventHandler) {
         super(context);
-        this.getHolder().addCallback(this);
+        this.setZOrderOnTop(true);
+        SurfaceHolder holder = this.getHolder();
+        holder.addCallback(this);
+        holder.setFormat(PixelFormat.TRANSPARENT);
         mGameLogic = new GameLogic(gameEventHandler);
     }
     

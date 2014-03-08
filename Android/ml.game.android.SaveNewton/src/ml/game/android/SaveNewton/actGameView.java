@@ -109,9 +109,10 @@ public class actGameView extends BaseGameActivity{
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         this.setContentView(R.layout.gameview);
         mMainLayout = (RelativeLayout)this.findViewById(R.id.actGameView_mainLayout);
+        RelativeLayout.LayoutParams lypView = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        mMainLayout.addView(new GameBackgroundView(this), lypView);
         mGameView = new GameView(this, mGameEventHandler);
-        mMainLayout.addView(mGameView, 
-                new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mMainLayout.addView(mGameView, lypView);
         mVibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
         initPauseControlLayout();
         mAdView = ADManager.loadAD(this, mMainLayout);
