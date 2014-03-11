@@ -97,6 +97,7 @@ public class actGameView extends BaseGameActivity{
                 		GamesClient client = actGameView.this.getGamesClient();
                 		for(AchievementMgt.LocalAchievement arch : unlockedAchievements){
                 			client.unlockAchievement(arch.ID);
+                			DataAccess.unlockAchievementOnline(actGameView.this, arch.ID);
                 		}
                 	}else{
                 		Toast.makeText(actGameView.this, 
