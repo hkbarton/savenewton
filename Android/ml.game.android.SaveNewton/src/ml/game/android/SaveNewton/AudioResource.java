@@ -56,7 +56,7 @@ public class AudioResource{
     }
     
     public static void playSoundEffect(int effectID){
-        if (effectID > 0 && DataAccess.Pref_IsSound){
+        if (effectID > 0 && DataAccess.Pref_IsSound && sSoundEffectPool!=null){
             sSoundEffectPool.play(effectID, 0.9f, 0.9f, 0, 0, 1.0f);
         }
     }

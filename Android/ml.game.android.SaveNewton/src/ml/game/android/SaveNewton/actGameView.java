@@ -79,7 +79,7 @@ public class actGameView extends BaseGameActivity{
                 showPauseControl();
                 break;
             case GameLogic.GameEvent_GameResume:
-            	ADManager.hideAdDelay(mAdView, 4);
+            	ADManager.hideAdDelay(mAdView, 3);
                 hidePauseControl();
                 break;
             case GameLogic.GameEvent_GameOvering:
@@ -93,9 +93,16 @@ public class actGameView extends BaseGameActivity{
                 List<AchievementMgt.LocalAchievement> unlockedAchievements = 
                     AchievementMgt.unlockAchievementsByStatData(actGameView.this);
                 if (unlockedAchievements!=null && unlockedAchievements.size()>0){
-                    Toast.makeText(actGameView.this, 
+                	if (actGameView.this.isSignedIn()){
+                		GamesClient client = actGameView.this.getGamesClient();
+                		for(AchievementMgt.LocalAchievement arch : unlockedAchievements){
+                			client.unlockAchievement(arch.ID);
+                		}
+                	}else{
+                		Toast.makeText(actGameView.this, 
                             AchievementMgt.getAchievementsUnlockTip(actGameView.this, unlockedAchievements), 
                             Toast.LENGTH_LONG).show();
+                	}
                 }
                 break;
             }
@@ -116,7 +123,7 @@ public class actGameView extends BaseGameActivity{
         mVibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
         initPauseControlLayout();
         mAdView = ADManager.loadAD(this, mMainLayout);
-        ADManager.hideAdDelay(mAdView, 10);
+        ADManager.hideAdDelay(mAdView, 5);
         initAnimation();
     }
     
@@ -335,7 +342,7 @@ public class actGameView extends BaseGameActivity{
             menuPostLocal.setVisibility(View.GONE);
             menuPostOnline.setVisibility(View.GONE);
             menuReturn.setVisibility(View.GONE);
-            ADManager.hideAdDelay(mAdView, 4);
+            ADManager.hideAdDelay(mAdView, 3);
             mGameView.restartGame();
         }
         @Override
@@ -441,6 +448,8 @@ public class actGameView extends BaseGameActivity{
 									mAchievementSubmitCnt++;
 									if (statusCode!=GamesClient.STATUS_OK){
 										mAchievementFailCnt++;
+									}else{
+										DataAccess.unlockAchievementOnline(actGameView.this, achievementId);
 									}
 									if (mAchievementSubmitCnt==localUnlockIDs.length){
 										if (mAchievementFailCnt > 0){ // part failed
