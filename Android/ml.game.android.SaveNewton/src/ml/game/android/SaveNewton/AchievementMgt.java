@@ -29,6 +29,7 @@ public class AchievementMgt{
     private static final int ScientistKiller_Count = 30;
     
     public static class StatData{
+    	public int CurrentHighestScore;
         // Round Stat.
         public int Score;
         public int ContinueShootCount;
@@ -37,6 +38,13 @@ public class AchievementMgt{
         public int ContinueWeakBowShootCount;
         // Game Stat.
         public int KillNewtonTimes;
+        
+        public boolean isHighestScore(){
+        	if (Score > CurrentHighestScore){
+        		return true;
+        	}
+        	return false;
+        }
     }
     
     public static class LocalAchievement{
@@ -149,6 +157,7 @@ public class AchievementMgt{
     public static void init(Context context){
         StatData = new StatData();
         sUnlockAchievementIDs = DataAccess.getUnlockAchievementIDs(context);
+        StatData.CurrentHighestScore = DataAccess.getHightestScore(context);
     }
     
     public static void resetRoundStatData(){

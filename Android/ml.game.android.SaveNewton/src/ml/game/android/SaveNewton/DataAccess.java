@@ -16,25 +16,25 @@ public class DataAccess{
     private static final String PrefKey_IsSound = "pis";
     private static final String PrefKey_IsVibration = "piv";
     private static final String PrefKey_Level = "pl";
+    private static final String PrefKey_HightestScore = "phs";
     private static final String Database_Name = "save_newton_db";
     private static final String TableName_Score = "local_score";
     private static final int Max_LocalScore_Count = 100;
     
     public static boolean Pref_IsSound;
     public static boolean Pref_IsVibration;
-    public static float Pref_Level;
     
     public static void init(Context context){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        Pref_Level = pref.getFloat(PrefKey_Level, -1);
-        if (Pref_Level==-1){ // not initialized, initialize preferences
+        float hasInit = pref.getFloat(PrefKey_Level, 0);
+        if (hasInit <= 0){ // not initialized, initialize preferences
             Pref_IsSound = true;
             Pref_IsVibration = true;
-            Pref_Level = GameLogic.Default_DifficultyLevel;
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean(PrefKey_IsSound, Pref_IsSound);
             editor.putBoolean(PrefKey_IsVibration, Pref_IsVibration);
-            editor.putFloat(PrefKey_Level, Pref_Level);
+            editor.putFloat(PrefKey_Level, 1);
+            editor.putInt(PrefKey_HightestScore, 0);
             editor.commit();
         }else{
             Pref_IsSound = pref.getBoolean(PrefKey_IsSound, true);
@@ -85,6 +85,18 @@ public class DataAccess{
         editor.putBoolean(PrefKey_IsVibration, value);
         editor.commit();
         Pref_IsVibration = value;
+    }
+    
+    public static int getHightestScore(Context context){
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        return pref.getInt(PrefKey_HightestScore, 0);
+    }
+    
+    public static void setHightestScore(Context context, int score){
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt(PrefKey_HightestScore, score);
+        editor.commit();
     }
     
     public static void saveLocalScore(Context context, String name, int score){

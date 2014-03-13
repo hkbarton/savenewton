@@ -24,11 +24,9 @@ public final class GameResource{
     public static final int GoldenBowIcon_FrameIndex = 1;
     public static final int WeakBowIcon_FrameIndex = 2;
     public static final int GoldenBow_ArrowCount = 3;
-    public static final int ScaleTipText_GoldenApple_Frame = 0;
-    public static final int ScaleTipText_GreenApple_Frame = 1;
-    public static final int ScaleTipText_LowGravityApple_Frame = 2;
-    // fake, if ScaleTipText is CountDown number, it will use drawNumber instead
-    public static final int ScaleTipText_CountDown_Frame = 3;
+    public static final int ScaleTipText_LowGravityApple_Frame = 0;
+    public static final int ScaleTipText_CountDown_Frame = 1;
+    public static final int ScaleTipText_HightScore = 2;
     public static final int NumberSize_Normal = 0;
     public static final int NumberSize_Middle = 1;
     public static final int NumberSize_Big = 2;
@@ -532,21 +530,17 @@ public final class GameResource{
         SLNumbers[9] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.slnt9, sNoScaleOp), 
                 slnumberWidth, slNumberHeight, true);
         // init Tip text
-        ScaleTipTexts = new Bitmap[4];
-        ScaleTipTexts[0] = BitmapFactory.decodeResource(res, R.drawable.tip0, sNoScaleOp);
+        ScaleTipTexts = new Bitmap[3];
+        ScaleTipTexts[0] = BitmapFactory.decodeResource(res, R.drawable.tip_gravity, sNoScaleOp);
         ScaleTipTexts[0] = Bitmap.createScaledBitmap(ScaleTipTexts[0], 
                 (int)(ScaleTipTexts[0].getWidth()*hScaleRate), 
                 (int)(ScaleTipTexts[0].getHeight()*hScaleRate), true);
-        ScaleTipTexts[1] = BitmapFactory.decodeResource(res, R.drawable.tip1, sNoScaleOp);
-        ScaleTipTexts[1] = Bitmap.createScaledBitmap(ScaleTipTexts[1], 
-                (int)(ScaleTipTexts[1].getWidth()*hScaleRate), 
-                (int)(ScaleTipTexts[1].getHeight()*hScaleRate), true);
-        ScaleTipTexts[2] = BitmapFactory.decodeResource(res, R.drawable.tip2, sNoScaleOp);
+        // fake, if ScaleTipText is CountDown number, it will use drawNumber instead
+        ScaleTipTexts[1] = SLNumbers[0];
+        ScaleTipTexts[2] = BitmapFactory.decodeResource(res, R.drawable.tip_highscore, sNoScaleOp);
         ScaleTipTexts[2] = Bitmap.createScaledBitmap(ScaleTipTexts[2], 
                 (int)(ScaleTipTexts[2].getWidth()*hScaleRate), 
                 (int)(ScaleTipTexts[2].getHeight()*hScaleRate), true);
-        // fake, if ScaleTipText is CountDown number, it will use drawNumber instead
-        ScaleTipTexts[3] = SLNumbers[0];
         // pause game tip
         PauseGameTip = BitmapFactory.decodeResource(res, R.drawable.pausetip, sNoScaleOp);
         PauseGameTip = Bitmap.createScaledBitmap(PauseGameTip, 

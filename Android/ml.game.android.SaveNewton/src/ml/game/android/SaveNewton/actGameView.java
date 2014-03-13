@@ -88,6 +88,7 @@ public class actGameView extends BaseGameActivity{
             case GameLogic.GameEvent_GameOver:
                 showMenu();
                 DataAccess.saveAllGameData(actGameView.this);
+                checkIfHighScore();
                 break;
             case GameLogic.GameEvent_StatDataChange:
                 List<AchievementMgt.LocalAchievement> unlockedAchievements = 
@@ -298,6 +299,14 @@ public class actGameView extends BaseGameActivity{
         menuPostLocal.startAnimation(mMenuInAnimations[1]);
         menuPostOnline.startAnimation(mMenuInAnimations[2]);
         menuReturn.startAnimation(mMenuInAnimations[3]);
+    }
+    
+    private void checkIfHighScore(){
+    	if (AchievementMgt.StatData.isHighestScore()){
+    		AchievementMgt.StatData.CurrentHighestScore = AchievementMgt.StatData.Score;
+    		DataAccess.setHightestScore(this, AchievementMgt.StatData.CurrentHighestScore);
+    		// TODO, show high score view with share to Facebook
+    	}
     }
     
     private void restartGame(){

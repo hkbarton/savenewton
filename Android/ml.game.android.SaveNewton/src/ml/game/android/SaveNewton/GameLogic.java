@@ -73,6 +73,7 @@ public class GameLogic{
     private int mGravity, mCurGravity;
     private int mAppleCreateSpeedMinValue;
     private int mGameOveringTime;
+    private boolean mIsReachHighScore;
     
     public float CloudLeftPos, CloudTopPos1, CloudTopPos2;
     
@@ -138,6 +139,7 @@ public class GameLogic{
         resetLowGravityAppCountDownShowFlag();
         mGameOveringTime = 0;
         AchievementMgt.resetRoundStatData();
+        mIsReachHighScore = false;
     }
     
     public void pauseGame(long pauseTime){
@@ -323,6 +325,13 @@ public class GameLogic{
             break;
         }
         AchievementMgt.StatData.Score += addedScore;
+        if (AchievementMgt.StatData.CurrentHighestScore > 0 
+        	&& AchievementMgt.StatData.isHighestScore() && !mIsReachHighScore){
+        	mIsReachHighScore = true;
+        	Tips.add(new TipText(GameResource.ScaleTipText_HightScore,
+                    GameResource.GameCenterLeftPos, GameResource.GameCenterTopPos,
+                    TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
+        }
         DataAccess.GDGold++;
         mGameEventHandler.sendEmptyMessage(GameEvent_StatDataChange);
         Tips.add(new TipText(hitCenterLeftPos, hitCenterTopPos, addedScore));
