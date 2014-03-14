@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +21,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
@@ -37,6 +39,8 @@ public class actGameView extends BaseGameActivity{
     private RelativeLayout mMainLayout;
     private ImageView imgBtnVibration, imgBtnSound, imgBtnReturn;
     private ImageView menuRestart, menuPostLocal, menuPostOnline, menuReturn;
+    private RelativeLayout lyHighScore;
+    private ImageView mImgHighScore;
     private AdView mAdView;
     private Animation[] mMenuInAnimations, mMenuOutAnimations;
     
@@ -306,6 +310,54 @@ public class actGameView extends BaseGameActivity{
     		AchievementMgt.StatData.CurrentHighestScore = AchievementMgt.StatData.Score;
     		DataAccess.setHightestScore(this, AchievementMgt.StatData.CurrentHighestScore);
     		// TODO, show high score view with share to Facebook
+    		// View Render
+    		int idLyScore = 20;
+    		if (lyHighScore==null){
+    			// create view to show high score screen
+    			lyHighScore = new RelativeLayout(this);
+    			RelativeLayout.LayoutParams lypHighScore = new RelativeLayout.LayoutParams(
+    				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    			lypHighScore.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+    			lypHighScore.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    			lypHighScore.topMargin = GameResource.HightScoreViewTopMargin;
+    			// high score tip text image
+    			ImageView imgHighScore = mImgHighScore = new ImageView(this);
+    			imgHighScore.setId(10);
+    			imgHighScore.setScaleType(ScaleType.FIT_CENTER);
+    			Bitmap image = GameResource.ScaleTipTexts[GameResource.ScaleTipText_HightScore_Frame];
+    			imgHighScore.setImageBitmap(image);
+    			RelativeLayout.LayoutParams lypImgHighScore = new RelativeLayout.LayoutParams(image.getWidth(), image.getHeight());
+    			lypImgHighScore.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+    			lyHighScore.addView(imgHighScore, lypImgHighScore);
+    			mMainLayout.addView(lyHighScore, lypHighScore);
+    			// share button
+    			
+    		}
+    		// refresh score
+    		View oldScore = lyHighScore.findViewById(idLyScore);
+    		if (oldScore!=null){
+    			lyHighScore.removeView(oldScore);
+    		}
+			LinearLayout lyScore = new LinearLayout(this);
+			lyScore.setId(idLyScore);
+			lyScore.setOrientation(LinearLayout.HORIZONTAL);
+			String scoreStr = String.valueOf(AchievementMgt.StatData.Score);
+			LinearLayout.LayoutParams lypNumber = new LinearLayout.LayoutParams(GameResource.LNumbers[0].getWidth(), 
+				GameResource.LNumbers[0].getHeight());
+			for (int i=0;i<scoreStr.length();i++){
+				ImageView numberView = new ImageView(this);
+				numberView.setScaleType(ScaleType.FIT_CENTER);
+				numberView.setImageBitmap(GameResource.LNumbers[scoreStr.charAt(i)-48]);
+				lyScore.addView(numberView, lypNumber);
+			}
+			RelativeLayout.LayoutParams lypScore = new RelativeLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			lypScore.addRule(RelativeLayout.BELOW, mImgHighScore.getId());
+			lypScore.addRule(RelativeLayout.CENTER_HORIZONTAL);
+			lypScore.topMargin = 5;
+			lyHighScore.addView(lyScore, lypScore);
+			// show view
+    		lyHighScore.setVisibility(View.VISIBLE);
     	}
     }
     
@@ -314,6 +366,9 @@ public class actGameView extends BaseGameActivity{
         menuPostLocal.startAnimation(mMenuOutAnimations[1]);
         menuPostOnline.startAnimation(mMenuOutAnimations[2]);
         menuReturn.startAnimation(mMenuOutAnimations[3]);
+        if (lyHighScore!=null){
+        	lyHighScore.setVisibility(View.GONE);
+        }
     }
     
     private AlertDialog diagPostLocalScore;

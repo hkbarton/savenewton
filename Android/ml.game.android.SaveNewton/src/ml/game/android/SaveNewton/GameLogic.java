@@ -328,7 +328,7 @@ public class GameLogic{
         if (AchievementMgt.StatData.CurrentHighestScore > 0 
         	&& AchievementMgt.StatData.isHighestScore() && !mIsReachHighScore){
         	mIsReachHighScore = true;
-        	Tips.add(new TipText(GameResource.ScaleTipText_HightScore,
+        	Tips.add(new TipText(GameResource.ScaleTipText_HightScore_Frame,
                     GameResource.GameCenterLeftPos, GameResource.GameCenterTopPos,
                     TipText.ScaleTextTipScaleTime_Normal, TipText.ScaleTextTipRemoveTime_Normal, 0));
         }

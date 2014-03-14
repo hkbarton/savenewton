@@ -89,7 +89,17 @@ public class DataAccess{
     
     public static int getHightestScore(Context context){
     	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getInt(PrefKey_HightestScore, 0);
+        int result = pref.getInt(PrefKey_HightestScore, 0);
+        if (result==0){ // try read from local leaderboard data
+        	SQLiteDatabase db = context.openOrCreateDatabase(Database_Name, Context.MODE_PRIVATE, null);
+        	Cursor cursor = db.query(TableName_Score, new String[]{"score"}, null, null, null, null, "score DESC", "1");
+        	if (cursor!=null && cursor.moveToFirst()){
+        		result = cursor.getInt(0);
+        	}
+        	cursor.close();
+        	db.close();
+        }
+        return result;
     }
     
     public static void setHightestScore(Context context, int score){

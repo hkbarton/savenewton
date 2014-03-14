@@ -26,7 +26,7 @@ public final class GameResource{
     public static final int GoldenBow_ArrowCount = 3;
     public static final int ScaleTipText_LowGravityApple_Frame = 0;
     public static final int ScaleTipText_CountDown_Frame = 1;
-    public static final int ScaleTipText_HightScore = 2;
+    public static final int ScaleTipText_HightScore_Frame = 2;
     public static final int NumberSize_Normal = 0;
     public static final int NumberSize_Middle = 1;
     public static final int NumberSize_Big = 2;
@@ -84,6 +84,8 @@ public final class GameResource{
     private static final int StoreItemIconOriLeftMargin = 20;
     private static final int StoreItemIconOriPadding = 30;
     private static final int StoreItemLevelStarOriSize = 20;
+    // hight score view ori top margin
+    private static final int HightScoreViewOriTopMargin = 80;
     
     public static int GameStageWidth; // in Pixel
     public static int GameStageHeight; // in Pixel
@@ -101,6 +103,8 @@ public final class GameResource{
     public static int GoldCoinLeftPos, GoldCoinNumberLeftPos;
     // Store Item Background Size
     public static int StoreItemBgSize, StoreItemIconLeftMargin, StoreItemTopMargin, StoreItemIconPadding, StoreItemLevelStarSize;
+    // High Score View top margin
+    public static int HightScoreViewTopMargin;
     
     public static Bitmap GameStage_Back0, GameStage_Back1, GameStage_Front, GameStage_Cloud;
     public static Bitmap[] NormalApple, SpecialApple, GoldenApple, GreenApple;
@@ -276,6 +280,8 @@ public final class GameResource{
         StoreItemTopMargin = (int)(StoreItemOriTopMargin * hScaleRate);
         StoreItemIconPadding = (int)(StoreItemIconOriPadding * wScaleRate);
         StoreItemLevelStarSize = (int)(StoreItemLevelStarOriSize * wScaleRate);
+        // high score view top margin
+        HightScoreViewTopMargin = (int)(HightScoreViewOriTopMargin * hScaleRate);
     }
     
     private static void initAppleResource(Resources res, float scaleRate){
