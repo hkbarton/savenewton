@@ -136,7 +136,7 @@ public class actGameView extends BaseGameActivity{
         mVibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
         initPauseControlLayout();
         mAdView = ADManager.loadAD(this, mMainLayout);
-        ADManager.hideAdDelay(mAdView, 5);
+        ADManager.hideAdDelay(mAdView, 3);
         initAnimation();
     }
     
@@ -325,7 +325,8 @@ public class actGameView extends BaseGameActivity{
     	opts.inScaled = false;
     	Resources res = this.getResources();
     	Bitmap imgBase = BitmapFactory.decodeResource(res, R.drawable.sharebg, opts);
-    	Canvas canvas = new Canvas(Bitmap.createBitmap(imgBase.getWidth(), imgBase.getHeight(), Bitmap.Config.ARGB_8888));
+    	Bitmap shareImg = Bitmap.createBitmap(imgBase.getWidth(), imgBase.getHeight(), Bitmap.Config.ARGB_8888);
+    	Canvas canvas = new Canvas(shareImg);
     	canvas.drawBitmap(imgBase, 0, 0, null);
     	String scoreStr = String.valueOf(AchievementMgt.StatData.Score);
     	Bitmap digital0 = BitmapFactory.decodeResource(res, R.drawable.lnt0, opts);
@@ -353,7 +354,7 @@ public class actGameView extends BaseGameActivity{
     	File imageFile = new File(this.getExternalFilesDir(null), "myscore.jpg");
     	try{
 	    	FileOutputStream ofs = new FileOutputStream(imageFile);
-	    	imgBase.compress(Bitmap.CompressFormat.JPEG, 100, ofs);
+	    	shareImg.compress(Bitmap.CompressFormat.JPEG, 100, ofs);
 	    	ofs.close();
     	}catch(Exception ex){
     		Toast.makeText(this, "Can't share your score at this time, please try again.", Toast.LENGTH_LONG).show();
