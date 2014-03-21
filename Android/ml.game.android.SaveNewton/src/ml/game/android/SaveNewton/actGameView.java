@@ -322,16 +322,18 @@ public class actGameView extends BaseGameActivity{
     	}
     	// render shared image
     	BitmapFactory.Options opts = new BitmapFactory.Options();
+    	opts.inScaled = false;
     	Resources res = this.getResources();
     	Bitmap imgBase = BitmapFactory.decodeResource(res, R.drawable.sharebg, opts);
     	Bitmap shareImg = Bitmap.createBitmap(imgBase.getWidth(), imgBase.getHeight(), Bitmap.Config.ARGB_8888);
+    	shareImg.setDensity(Bitmap.DENSITY_NONE);
     	Canvas canvas = new Canvas(shareImg);
     	canvas.drawBitmap(imgBase, 0, 0, null);
     	String scoreStr = String.valueOf(AchievementMgt.StatData.Score);
     	Bitmap digital0 = BitmapFactory.decodeResource(res, R.drawable.lnt0, opts);
     	int xstepWidth = digital0.getWidth() + 2;
-    	int digitalTopPos = imgBase.getHeight() - digital0.getHeight() - 40;
-    	int digitalLeftPos = imgBase.getWidth() - xstepWidth - 40;
+    	int digitalTopPos = imgBase.getHeight() - digital0.getHeight() - 20;
+    	int digitalLeftPos = imgBase.getWidth() - xstepWidth - 20;
     	for (int i=scoreStr.length()-1;i>=0;i--){
     		Bitmap digital = null;
     		switch(scoreStr.charAt(i)-48){
