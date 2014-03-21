@@ -1,5 +1,7 @@
 package ml.game.android.SaveNewton;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -7,8 +9,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
@@ -305,11 +312,68 @@ public class actGameView extends BaseGameActivity{
         menuReturn.startAnimation(mMenuInAnimations[3]);
     }
     
+    private void shareHightScore(){
+    	// share score image require external storage are available at this time
+    	if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+    		Toast.makeText(this, 
+    			"Can't share your score at this time, make sure you didn't mount your phone on computer.", 
+    			Toast.LENGTH_LONG).show();
+    		return;
+    	}
+    	// render shared image
+    	BitmapFactory.Options opts = new BitmapFactory.Options();
+    	opts.inScaled = false;
+    	Resources res = this.getResources();
+    	Bitmap imgBase = BitmapFactory.decodeResource(res, R.drawable.sharebg, opts);
+    	Canvas canvas = new Canvas(Bitmap.createBitmap(imgBase.getWidth(), imgBase.getHeight(), Bitmap.Config.ARGB_8888));
+    	canvas.drawBitmap(imgBase, 0, 0, null);
+    	String scoreStr = String.valueOf(AchievementMgt.StatData.Score);
+    	Bitmap digital0 = BitmapFactory.decodeResource(res, R.drawable.lnt0, opts);
+    	int xstepWidth = digital0.getWidth() + 2;
+    	int digitalTopPos = imgBase.getHeight() - digital0.getHeight() - 5;
+    	int digitalLeftPos = imgBase.getWidth() - xstepWidth;
+    	for (int i=scoreStr.length()-1;i>=0;i--){
+    		Bitmap digital = null;
+    		switch(scoreStr.charAt(i)-48){
+    			case 0: digital = digital0; break;
+    			case 1: digital = BitmapFactory.decodeResource(res, R.drawable.lnt1, opts); break;
+    			case 2: digital = BitmapFactory.decodeResource(res, R.drawable.lnt2, opts); break;
+    			case 3: digital = BitmapFactory.decodeResource(res, R.drawable.lnt3, opts); break;
+    			case 4: digital = BitmapFactory.decodeResource(res, R.drawable.lnt4, opts); break;
+    			case 5: digital = BitmapFactory.decodeResource(res, R.drawable.lnt5, opts); break;
+    			case 6: digital = BitmapFactory.decodeResource(res, R.drawable.lnt6, opts); break;
+    			case 7: digital = BitmapFactory.decodeResource(res, R.drawable.lnt7, opts); break;
+    			case 8: digital = BitmapFactory.decodeResource(res, R.drawable.lnt8, opts); break;
+    			case 9: digital = BitmapFactory.decodeResource(res, R.drawable.lnt9, opts); break;
+    		}
+    		canvas.drawBitmap(digital, digitalLeftPos, digitalTopPos, null);
+    		digitalLeftPos -= xstepWidth;
+    	}
+    	// save score bitmap to temporary file
+    	File imageFile = new File(this.getExternalFilesDir(null), "myscore.jpg");
+    	try{
+	    	FileOutputStream ofs = new FileOutputStream(imageFile);
+	    	imgBase.compress(Bitmap.CompressFormat.JPEG, 100, ofs);
+	    	ofs.close();
+    	}catch(Exception ex){
+    		Toast.makeText(this, "Can't share your score at this time, please try again.", Toast.LENGTH_LONG).show();
+        	return;
+    	}
+    	// share score image file to other apps
+    	Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("image/*");
+        String shareText = "I got my highest score in game Save Newton.";
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(imageFile));
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, shareText);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        this.startActivity(Intent.createChooser(shareIntent, "How do you want to share your score?"));
+    }
+    
     private void checkIfHighScore(){
     	if (AchievementMgt.StatData.isHighestScore()){
     		AchievementMgt.StatData.CurrentHighestScore = AchievementMgt.StatData.Score;
     		DataAccess.setHightestScore(this, AchievementMgt.StatData.CurrentHighestScore);
-    		// TODO, show high score view with share to Facebook
     		// View Render
     		int idLyScore = 20;
     		if (lyHighScore==null){
@@ -331,7 +395,21 @@ public class actGameView extends BaseGameActivity{
     			lyHighScore.addView(imgHighScore, lypImgHighScore);
     			mMainLayout.addView(lyHighScore, lypHighScore);
     			// share button
-    			
+    			ImageView btnShare = new ImageView(this);
+    			btnShare.setScaleType(ScaleType.FIT_CENTER);
+    			btnShare.setClickable(true);
+    			btnShare.setImageResource(R.drawable.share);
+    			RelativeLayout.LayoutParams lypBtnShare = new RelativeLayout.LayoutParams(image.getHeight(), image.getHeight());
+    			lypBtnShare.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    			lypBtnShare.addRule(RelativeLayout.BELOW, idLyScore);
+    			lypBtnShare.topMargin = 10;
+    			lyHighScore.addView(btnShare, lypBtnShare);
+    			btnShare.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						shareHightScore();
+					}
+				});
     		}
     		// refresh score
     		View oldScore = lyHighScore.findViewById(idLyScore);
@@ -354,7 +432,7 @@ public class actGameView extends BaseGameActivity{
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			lypScore.addRule(RelativeLayout.BELOW, mImgHighScore.getId());
 			lypScore.addRule(RelativeLayout.CENTER_HORIZONTAL);
-			lypScore.topMargin = 5;
+			lypScore.topMargin = 10;
 			lyHighScore.addView(lyScore, lypScore);
 			// show view
     		lyHighScore.setVisibility(View.VISIBLE);
